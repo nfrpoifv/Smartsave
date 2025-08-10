@@ -1,0 +1,816 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gastos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    body > div {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 
+          0 10px 25px -5px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    header > div {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    header a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    header a:hover {
+      color: #f7931e;
+      background: rgba(247, 147, 30, 0.1);
+      transform: translateY(-1px);
+      border-color: rgba(247, 147, 30, 0.3);
+    }
+
+    header button {
+      padding: 12px 24px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      color: #fca5a5;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    header button:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(39, 39, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 20px 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    nav a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin: 0 16px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      position: relative;
+      display: inline-block;
+    }
+
+    nav a:hover {
+      color: #f7931e;
+      background: rgba(247, 147, 30, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Main Content */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* Form Section */
+    .form-section {
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 
+          0 10px 25px -5px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #f7931e, #ffa726, #ffb74d);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .form-section:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+          0 20px 40px -10px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .form-section:hover::before {
+      opacity: 1;
+    }
+
+    .form-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-section h2::before {
+      content: '';
+      color: #f7931e;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    /* Form Styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    form p {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      color: #e4e4e7;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    input, select {
+      padding: 12px 16px;
+      background: rgba(39, 39, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #f7931e;
+      box-shadow: 0 0 0 3px rgba(247, 147, 30, 0.1);
+      background: rgba(39, 39, 42, 0.95);
+    }
+
+    input::placeholder {
+      color: #71717a;
+    }
+
+    select option {
+      background: #27272a;
+      color: #ffffff;
+    }
+
+    button[type="submit"] {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(135deg, #ff8f00 0%, #f57c00 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(247, 147, 30, 0.3);
+    }
+
+    /* Message Styles */
+    #message {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    /* Entries List Section */
+    .entries-section {
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 
+          0 10px 25px -5px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .entries-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #f7931e, #ffa726, #ffb74d);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .entries-section:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+          0 20px 40px -10px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .entries-section:hover::before {
+      opacity: 1;
+    }
+
+    .entries-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .entries-section h2::before {
+      content: '💰';
+      font-size: 1.5rem;
+    }
+
+    /* Entry Cards */
+    .entry-card {
+      background: rgba(39, 39, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .entry-card:hover {
+      background: rgba(39, 39, 42, 0.8);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(4px);
+    }
+
+    .entry-card p {
+      margin-bottom: 8px;
+      line-height: 1.5;
+      color: #d4d4d8;
+      font-size: 0.95rem;
+    }
+
+    .entry-card strong {
+      color: #f7931e;
+      font-weight: 600;
+    }
+
+    .entry-card .amount {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #86efac;
+    }
+
+    .entry-card .amount::before {
+      content: '$';
+      color: #f7931e;
+      margin-right: 2px;
+    }
+
+    .entry-card button {
+      padding: 8px 16px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      color: #fca5a5;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .entry-card button:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* HR Separator */
+    hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      margin: 32px 0;
+    }
+
+    /* Loading and Error States */
+    .loading {
+      color: #71717a;
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .error {
+      color: #fca5a5;
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+
+    .error-msg {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    /* Animation */
+    .form-section,
+    .entries-section {
+      animation: slideInUp 0.6s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .entries-section {
+      animation-delay: 0.2s;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body > div {
+        padding: 20px;
+      }
+      
+      header {
+        padding: 24px;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 16px;
+      }
+      
+      nav {
+        padding: 16px 20px;
+      }
+      
+      nav a {
+        display: inline-block;
+        margin: 8px 12px;
+        font-size: 0.9rem;
+      }
+      
+      .form-section,
+      .entries-section {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body > div {
+        padding: 16px;
+      }
+      
+      header {
+        padding: 20px;
+      }
+      
+      header h1 {
+        font-size: 1.5rem;
+      }
+      
+      nav {
+        padding: 12px 16px;
+      }
+      
+      nav a {
+        margin: 6px 8px;
+        font-size: 0.85rem;
+      }
+      
+      .form-section,
+      .entries-section {
+        padding: 20px;
+      }
+
+      .form-section h2,
+      .entries-section h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+<body>
+  <div>
+    <header>
+      <h1>Gastos Financieros</h1>
+    </header>
+
+      <nav>
+     <a href="dashboard.html">Dashboard</a> 
+    <a href="budgets.html">Presupuestos</a>  
+    <a href="goals.html">Metas</a> 
+     <a href="entries.html">Gastos</a>
+     <a href="chatbot.html">Chatbot</a>
+     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="Aprender.html">Aprendizaje</a> 
+    </nav>
+    <main>
+      <div class="form-section">
+        <h2>Agregar Nuevo Gasto</h2>
+
+        <form onsubmit="createEntry(event)">
+          <p>
+            <label>Meta asociada:</label>
+            <select id="goal_id">
+              <option value="">Seleccionar meta (opcional)</option>
+            </select>
+          </p>
+
+          <p>
+            <label>Cantidad:</label>
+            <input type="number" step="0.01" id="entryAmount" placeholder="Cantidad (₡)" required />
+          </p>
+
+          <p>
+            <label>Categoría:</label>
+            <select id="entryCategory" required>
+              <option value="">Seleccionar categoría</option>
+              <option value="Alimentación">Alimentación</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Servicios">Servicios</option>
+              <option value="Entretenimiento">Entretenimiento</option>
+              <option value="Salud">Salud</option>
+              <option value="Educación">Educación</option>
+              <option value="Ropa">Ropa</option>
+              <option value="Hogar">Hogar</option>
+              <option value="Otros">Otros</option>
+            </select>
+          </p>
+
+          <p>
+            <label>Descripción (opcional):</label>
+            <input type="text" id="entryDescription" placeholder="Descripción (opcional)" />
+          </p>
+
+          <p>
+            <button type="submit">Agregar Gasto</button>
+          </p>
+        </form>
+
+        <div id="message"></div>
+      </div>
+
+      <div class="entries-section">
+        <h2>Mis Gastos</h2>
+        <div id="entries-list">
+          <p class="loading">Cargando gastos...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    // Objeto para guardar las categorías de cada gasto en memoria
+    let expenseCategories = {};
+
+    function getAuthHeaders() {
+      const token = localStorage.getItem('token');
+      return {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('expenseCategories'); // Limpiar categorías guardadas
+      window.location.href = 'index.html';
+    }
+
+    // Función para guardar categorías en localStorage
+    function saveCategoriesToStorage() {
+      localStorage.setItem('expenseCategories', JSON.stringify(expenseCategories));
+    }
+
+    // Función para cargar categorías desde localStorage
+    function loadCategoriesFromStorage() {
+      const saved = localStorage.getItem('expenseCategories');
+      if (saved) {
+        expenseCategories = JSON.parse(saved);
+      }
+    }
+
+    async function createEntry(event) {
+      event.preventDefault();
+
+      let goal_id = document.getElementById('goal_id').value;
+      goal_id = goal_id === '' ? null : parseInt(goal_id);
+
+      const amount = parseFloat(document.getElementById('entryAmount').value);
+      const category = document.getElementById('entryCategory').value;
+      const notes = document.getElementById('entryDescription').value;
+      const messageDiv = document.getElementById('message');
+
+      // Crear la descripción combinando categoría y notes
+      let combinedNotes = `Categoría: ${category}`;
+      if (notes && notes.trim() !== '') {
+        combinedNotes += ` | ${notes}`;
+      }
+
+      const entryData = {
+        goal_id,
+        amount,
+        notes: combinedNotes
+      };
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/entries`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(entryData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Guardar la categoría en memoria usando el ID del gasto
+          expenseCategories[data.entry.id] = category;
+          saveCategoriesToStorage();
+          
+          messageDiv.innerHTML = '<p style="color: green;">Gasto agregado exitosamente</p>';
+          document.querySelector('form').reset();
+          loadEntries();
+        } else {
+          messageDiv.innerHTML = '<p style="color: red;">' + (data.error || 'Error al agregar gasto') + '</p>';
+        }
+      } catch (error) {
+        messageDiv.innerHTML = '<p style="color: red;">Error de conexión: ' + error.message + '</p>';
+      }
+    }
+
+    async function deleteEntry(entryId) {
+      if (!confirm('¿Estás seguro de que quieres eliminar este gasto?')) return;
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/entries/${entryId}`, {
+          method: 'DELETE',
+          headers: getAuthHeaders(),
+        });
+
+        if (response.ok) {
+          // Eliminar la categoría de la memoria
+          delete expenseCategories[entryId];
+          saveCategoriesToStorage();
+          loadEntries();
+        } else {
+          alert('Error al eliminar gasto');
+        }
+      } catch (error) {
+        alert('Error de conexión: ' + error.message);
+      }
+    }
+
+    // Función para extraer categoría de las notas
+    function extractCategoryFromNotes(notes) {
+      if (!notes) return 'Sin categoría';
+      
+      // Buscar el patrón "Categoría: [nombre]"
+      const match = notes.match(/Categoría:\s*([^|]+)/);
+      if (match) {
+        return match[1].trim();
+      }
+      
+      return 'Sin categoría';
+    }
+
+    // Función para extraer descripción limpia de las notas
+    function extractDescriptionFromNotes(notes) {
+      if (!notes) return '-';
+      
+      // Si contiene el separador |, tomar la parte después
+      const parts = notes.split('|');
+      if (parts.length > 1) {
+        return parts[1].trim();
+      }
+      
+      // Si no hay separador pero comienza con "Categoría:", mostrar solo eso
+      if (notes.startsWith('Categoría:')) {
+        return '-';
+      }
+      
+      return notes;
+    }
+
+    async function loadEntries() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/entries`, {
+          headers: getAuthHeaders(),
+        });
+
+        const entriesDiv = document.getElementById('entries-list');
+
+        if (response.ok) {
+          const data = await response.json();
+
+          if (data.entries && data.entries.length > 0) {
+            entriesDiv.innerHTML = data.entries.map(entry => {
+              // Obtener categoría: primero de memoria, luego de las notas
+              let category = expenseCategories[entry.id] || extractCategoryFromNotes(entry.notes);
+              let description = extractDescriptionFromNotes(entry.notes);
+              
+              return `
+                <div class="entry-card">
+                  <p><strong>Meta:</strong> ${entry.goal_title || 'Gasto personal'}</p>
+                  <p><strong>Categoría:</strong> <span class="category-tag">${category}</span></p>
+                  <p><strong>Descripción:</strong> ${description}</p>
+                  <p><strong>Cantidad:</strong> ₡${entry.amount.toLocaleString('es-CR')}</p>
+                  <p><strong>Fecha:</strong> ${new Date(entry.entry_date).toLocaleDateString()}</p>
+                  <button class="delete-btn" onclick="deleteEntry('${entry.id}')">Eliminar</button>
+                </div>
+              `;
+            }).join('');
+          } else {
+            entriesDiv.innerHTML = '<p>No tienes gastos registrados</p>';
+          }
+        } else if (response.status === 401) {
+          entriesDiv.innerHTML = '<p style="color: red;">Sesión expirada. <a href="index.html">Inicia sesión</a></p>';
+        } else {
+          entriesDiv.innerHTML = '<p style="color: red;">Error al cargar gastos</p>';
+        }
+      } catch (error) {
+        document.getElementById('entries-list').innerHTML = '<p style="color: red;">Error de conexión: ' + error.message + '</p>';
+      }
+    }
+
+    async function loadGoalsForEntry() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/goals`, {
+          headers: getAuthHeaders(),
+        });
+
+        if (response.ok) {
+          const goals = await response.json();
+          const select = document.getElementById('goal_id');
+
+          goals.forEach(goal => {
+            const option = document.createElement('option');
+            option.value = goal.id;
+            option.textContent = goal.title;
+            select.appendChild(option);
+          });
+        } else {
+          console.error('No se pudieron cargar las metas');
+        }
+      } catch (error) {
+        console.error('Error cargando metas:', error);
+      }
+    }
+
+    window.onload = function () {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      loadCategoriesFromStorage(); // Cargar categorías guardadas
+      loadGoalsForEntry();
+      loadEntries();
+    };
+  </script>
+</body>
+</html>

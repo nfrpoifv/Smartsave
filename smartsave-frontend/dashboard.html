@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartSave - Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+    min-height: 100vh;
+    color: #ffffff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+body > div {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+header {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+header > div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#user-name {
+    font-weight: 500;
+    color: #e4e4e7;
+    font-size: 1rem;
+}
+
+header button {
+    padding: 12px 24px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #fca5a5;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+header button:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Navigation */
+nav {
+    background: rgba(39, 39, 42, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+nav a {
+    color: #a1a1aa;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin: 0 16px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+nav a:first-child {
+    margin-left: 0;
+}
+
+nav a:hover {
+    color: #f7931e;
+    background: rgba(247, 147, 30, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Main Grid */
+main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+}
+
+/* Cards */
+#current-budget,
+#recent-entries,
+#goals-summary,
+#financial-tip {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#current-budget::before,
+#recent-entries::before,
+#goals-summary::before,
+#financial-tip::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f7931e, #ffa726, #ffb74d);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#current-budget:hover,
+#recent-entries:hover,
+#goals-summary:hover,
+#financial-tip:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+#current-budget:hover::before,
+#recent-entries:hover::before,
+#goals-summary:hover::before,
+#financial-tip:hover::before {
+    opacity: 1;
+}
+
+/* Card Headers */
+#current-budget h3,
+#recent-entries h3,
+#goals-summary h3,
+#financial-tip h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+/* Card Content */
+#budget-info p,
+#entries-list p,
+#goals-list p,
+#tip-content p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: #d4d4d8;
+}
+
+#budget-info strong,
+#entries-list strong,
+#goals-list strong {
+    color: #f7931e;
+    font-weight: 600;
+}
+
+/* Budget specific styles */
+#budget-info p:nth-child(1) {
+    color: #86efac;
+}
+
+#budget-info p:nth-child(2) {
+    color: #fca5a5;
+}
+
+#budget-info p:nth-child(3) {
+    color: #60a5fa;
+}
+
+/* Goals progress styling */
+#goals-list hr {
+    border: none;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 16px 0;
+}
+
+/* Financial tip styling */
+#financial-tip {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+#tip-content p {
+    font-style: italic;
+    color: #86efac;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+/* Loading states */
+#budget-info:has-text("Cargando..."),
+#entries-list:has-text("Cargando..."),
+#goals-list:has-text("Cargando..."),
+#tip-content:has-text("Cargando...") {
+    color: #71717a;
+    font-style: italic;
+}
+
+/* Error states */
+p:has-text("Error") {
+    color: #fca5a5;
+    font-style: italic;
+}
+
+/* Animation */
+main > div {
+    animation: slideInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+.goal-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+main > div:nth-child(1) { animation-delay: 0.1s; }
+main > div:nth-child(2) { animation-delay: 0.2s; }
+main > div:nth-child(3) { animation-delay: 0.3s; }
+main > div:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body > div {
+        padding: 20px;
+    }
+    
+    header {
+        padding: 24px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 16px;
+    }
+    
+    nav {
+        padding: 16px 20px;
+        text-align: center;
+    }
+    
+    nav a {
+        display: inline-block;
+        margin: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    main {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    #current-budget,
+    #recent-entries,
+    #goals-summary,
+    #financial-tip {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    body > div {
+        padding: 16px;
+    }
+    
+    header {
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    nav {
+        padding: 12px 16px;
+    }
+    
+    nav a {
+        margin: 6px 8px;
+        font-size: 0.85rem;
+    }
+    
+    #current-budget,
+    #recent-entries,
+    #goals-summary,
+    #financial-tip {
+        padding: 20px;
+    }
+}
+  .goal-progress-container {
+            background: rgba(39, 39, 42, 0.8);
+            height: 24px;
+            border-radius: 12px;
+            margin: 16px 0;
+            padding: 2px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .goal-progress-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.03) 50%, transparent 50%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+            background-size: 20px 20px;
+            animation: shimmer 2s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-20px);
+            }
+            100% {
+                transform: translateX(20px);
+            }
+        }
+
+        .goal-progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .goal-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(100%);
+                opacity: 1;
+            }
+        }
+
+        .progress-red {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+        }
+
+        .progress-orange {
+            background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
+        }
+
+        .progress-green {
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%);
+        }
+  </style>
+</head>
+  <div>
+    <header>
+      <h1>Panel de Control</h1>
+      <div>
+        <span id="user-name"></span>
+        <button onclick="logout()">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <nav>
+     <a href="dashboard.html">Dashboard</a> 
+    <a href="budgets.html">Presupuestos</a>  
+    <a href="goals.html">Metas</a> 
+     <a href="entries.html">Gastos</a>
+     <a href="chatbot.html">Chatbot</a>
+     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="Aprender.html">Aprendizaje</a> 
+    </nav>
+
+    <main>
+      <div id="current-budget">
+        <h3>Presupuesto Actual</h3>
+        <div id="budget-info">Cargando...</div>
+      </div>
+
+      <div id="recent-entries">
+        <h3>Últimos gastos</h3>
+        <div id="entries-list">Cargando...</div>
+      </div>
+
+      <div id="goals-summary">
+        <h3>Metas</h3>
+        <div id="goals-list">Cargando...</div>
+      </div>
+
+      <div id="financial-tip">
+        <h3>Consejo Financiero del Día</h3>
+        <div id="tip-content">Cargando...</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    function getAuthHeaders() {
+      const token = localStorage.getItem('token');
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('expenseCategories');
+      window.location.href = 'index.html';
+    }
+
+    function extractCategoryFromNotes(notes) {
+      if (!notes) return 'Sin categoría';
+      
+      const match = notes.match(/Categoría:\s*([^|]+)/);
+      if (match) {
+        return match[1].trim();
+      }
+      
+      return 'Sin categoría';
+    }
+
+    function extractDescriptionFromNotes(notes) {
+      if (!notes) return 'Sin descripción';
+      
+      const parts = notes.split('|');
+      if (parts.length > 1) {
+        return parts[1].trim();
+      }
+      
+      if (notes.startsWith('Categoría:')) {
+        return 'Sin descripción';
+      }
+      
+      return notes;
+    }
+
+    function loadCategoriesFromStorage() {
+      const saved = localStorage.getItem('expenseCategories');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+      return {};
+    }
+
+    async function loadUserInfo() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        document.getElementById('user-name').textContent = `Hola, ${user.name}`;
+      }
+    }
+
+    async function loadCurrentBudget() {
+      try {
+        const [budgetResponse, entriesResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/budgets/current`, { headers: getAuthHeaders() }),
+          fetch(`${API_BASE_URL}/entries`, { headers: getAuthHeaders() })
+        ]);
+
+        const budgetDiv = document.getElementById('budget-info');
+
+        if (budgetResponse.ok) {
+          const budgetData = await budgetResponse.json();
+          const budget = budgetData.budget;
+
+          let totalGastos = 0;
+          if (entriesResponse.ok) {
+            const entriesData = await entriesResponse.json();
+            const entries = entriesData.entries || entriesData || [];
+            
+            totalGastos = entries.reduce((total, entry) => {
+              return total + Number(entry.amount || 0);
+            }, 0);
+          }
+
+          if (budget.exists) {
+            const ingresos = Number(budget.total_income || 0);
+            const disponibleParaAhorrar = ingresos - totalGastos;
+            
+            budgetDiv.innerHTML = `
+              <p><strong>Ingresos:</strong> ₡${ingresos.toLocaleString('es-CR')}</p>
+              <p><strong>Gastos:</strong> ₡${totalGastos.toLocaleString('es-CR')}</p>
+              <p><strong>Disponible para ahorrar:</strong> ₡${disponibleParaAhorrar.toLocaleString('es-CR')}</p>
+              <p><strong>Período:</strong> ${budget.month_year}</p>
+            `;
+          } else {
+            budgetDiv.innerHTML = `
+              <p>No hay presupuesto registrado para este mes.</p>
+              <p><strong>Gastos registrados:</strong> ₡${totalGastos.toLocaleString('es-CR')}</p>
+              <a href="budgets.html">Crear presupuesto</a>
+            `;
+          }
+        } else {
+          const errorText = await budgetResponse.text();
+          console.error('Error en respuesta:', budgetResponse.status, errorText);
+          budgetDiv.innerHTML = '<p>Error al obtener el presupuesto actual</p>';
+        }
+      } catch (error) {
+        console.error('Error cargando presupuesto:', error);
+        document.getElementById('budget-info').innerHTML = '<p>Error al cargar presupuesto</p>';
+      }
+    }
+
+    async function loadRecentEntries() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/entries`, {
+          headers: getAuthHeaders()
+        });
+
+        const entriesDiv = document.getElementById('entries-list');
+        if (response.ok) {
+          const data = await response.json();
+          const entries = data.entries || data || [];
+          
+          if (entries && entries.length > 0) {
+            const expenseCategories = loadCategoriesFromStorage();
+            
+            const recentEntries = entries.slice(0, 5);
+            entriesDiv.innerHTML = recentEntries.map(entry => {
+              const category = expenseCategories[entry.id] || extractCategoryFromNotes(entry.notes);
+              const description = extractDescriptionFromNotes(entry.notes);
+              
+              return `
+                <div>
+                  <p><strong>Categoría:</strong> ${category}</p>
+                  <p><strong>Descripción:</strong> ${description}</p>
+                  <p><strong>Monto:</strong> ₡${Number(entry.amount).toLocaleString('es-CR')}</p>
+                  <p><strong>Fecha:</strong> ${new Date(entry.entry_date).toLocaleDateString()}</p>
+                </div>
+              `;
+            }).join('');
+          } else {
+            entriesDiv.innerHTML = '<p>No hay gastos registrados. <a href="entries.html">Agregar primer gasto</a></p>';
+          }
+        } else {
+          entriesDiv.innerHTML = '<p>Error al cargar gastos</p>';
+        }
+      } catch (error) {
+        console.error('Error cargando entradas:', error);
+        document.getElementById('entries-list').innerHTML = '<p>Error al cargar gastos</p>';
+      }
+    }
+
+    // FUNCIÓN CORREGIDA - Ahora usa los valores correctos de las metas y las nuevas clases CSS
+    async function loadGoals() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/goals`, {
+          headers: getAuthHeaders()
+        });
+
+        const goalsDiv = document.getElementById('goals-list');
+        if (response.ok) {
+          const goals = await response.json();
+
+          if (goals && goals.length > 0) {
+            const topGoals = goals.slice(0, 3);
+            goalsDiv.innerHTML = topGoals.map(goal => {
+              // CORREGIDO: Usar los valores directos de la meta, no de gastos
+              const currentAmount = Number(goal.current_amount || 0);
+              const targetAmount = Number(goal.target_amount || 0);
+              
+              // Calcular cuánto falta para la meta
+              const remaining = targetAmount - currentAmount;
+              const progress = targetAmount > 0 ? Math.round((currentAmount / targetAmount) * 100) : 0;
+              
+              // Clase CSS del progreso basado en porcentaje
+              const progressClass = progress >= 100 ? 'progress-green' : progress >= 50 ? 'progress-orange' : 'progress-red';
+              
+              return `
+                <div class="goal-item">
+                  <p><strong>${goal.title}</strong></p>
+                  <p><strong>Actual:</strong> ₡${currentAmount.toLocaleString('es-CR')}</p>
+                  <p><strong>Meta:</strong> ₡${targetAmount.toLocaleString('es-CR')}</p>
+                  <p><strong>Falta:</strong> ₡${Math.max(0, remaining).toLocaleString('es-CR')}</p>
+                  <div class="goal-progress-container">
+                    <div class="goal-progress-bar progress-${progressClass}" style="width: ${Math.min(progress, 100)}%;"></div>
+                  </div>
+                  <p><strong>Progreso:</strong> ${progress}%</p>
+                  ${goal.target_date ? `<p><strong>Fecha objetivo:</strong> ${new Date(goal.target_date).toLocaleDateString()}</p>` : ''}
+                </div>
+              `;
+            }).join('');
+          } else {
+            goalsDiv.innerHTML = '<p>No hay metas registradas. <a href="goals.html">Crear primera meta</a></p>';
+          }
+        } else {
+          const errorText = await response.text();
+          console.error('Error en metas:', response.status, errorText);
+          goalsDiv.innerHTML = '<p>Error al cargar metas</p>';
+        }
+      } catch (error) {
+        console.error('Error cargando metas:', error);
+        document.getElementById('goals-list').innerHTML = '<p>Error al cargar metas</p>';
+      }
+    }
+
+    async function loadFinancialTip() {
+      const tips = [
+        "💡 Ahorra al menos el 20% de tus ingresos mensuales.",
+        "📊 Revisa tus gastos semanalmente para mantener el control.",
+        "🎯 Establece metas específicas y alcanzables para tu ahorro.",
+        "🏦 Considera invertir en un fondo de emergencia equivalente a 6 meses de gastos.",
+        "⚙️ Automatiza tus ahorros para hacer el proceso más fácil.",
+        "📝 Categoriza todos tus gastos para identificar patrones.",
+        "💳 Evita las deudas innecesarias, especialmente en tarjetas de crédito.",
+        "📈 Diversifica tus inversiones para reducir riesgos."
+      ];
+      
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      document.getElementById('tip-content').innerHTML = `<p>${randomTip}</p>`;
+    }
+
+    window.onload = function () {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      loadUserInfo();
+      loadCurrentBudget();
+      loadRecentEntries();
+      loadGoals();
+      loadFinancialTip();
+    };
+  </script>
+</body>
+</html>

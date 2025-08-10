@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSave - Aprende a Ahorrar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 
+                0 10px 25px -5px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #a1a1aa;
+            font-weight: 500;
+        }
+
+        nav {
+            background: rgba(39, 39, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        nav a {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin: 0 16px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            color: #f7931e;
+            background: rgba(247, 147, 30, 0.1);
+            transform: translateY(-1px);
+        }
+
+        nav a.active {
+            color: #f7931e;
+            background: rgba(247, 147, 30, 0.15);
+        }
+
+        .content-container {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .section-nav {
+            background: rgba(39, 39, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .section-nav button {
+            padding: 12px 20px;
+            background: rgba(24, 24, 27, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #a1a1aa;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .section-nav button:hover {
+            background: rgba(247, 147, 30, 0.1);
+            border-color: rgba(247, 147, 30, 0.3);
+            color: #f7931e;
+            transform: translateY(-1px);
+        }
+
+        .section-nav button.active {
+            background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+            border-color: #f7931e;
+            color: #000000;
+        }
+
+        .section-content {
+            padding: 32px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .section-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .section-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .section-content::-webkit-scrollbar-thumb {
+            background: rgba(247, 147, 30, 0.3);
+            border-radius: 3px;
+        }
+
+        .section-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(247, 147, 30, 0.5);
+        }
+
+        .seccion {
+            line-height: 1.6;
+        }
+
+        .seccion h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .seccion h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            color: #ffffff;
+        }
+
+        .seccion h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+            color: #e4e4e7;
+        }
+
+        .seccion p {
+            margin-bottom: 16px;
+            color: #d4d4d8;
+            font-size: 1rem;
+        }
+
+        .seccion ul {
+            margin: 16px 0 16px 24px;
+            color: #d4d4d8;
+        }
+
+        .seccion li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .seccion li strong {
+            color: #f7931e;
+        }
+
+        .ejercicio-container {
+            background: rgba(39, 39, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .scenario-box {
+            background: rgba(24, 24, 27, 0.8);
+            border-left: 4px solid #f7931e;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .scenario-box.error {
+            border-left-color: #ef4444;
+        }
+
+        .scenario-box.success {
+            border-left-color: #22c55e;
+        }
+
+        .reveal-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+            border: none;
+            border-radius: 8px;
+            color: #000000;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            margin: 16px 0;
+            font-family: inherit;
+        }
+
+        .reveal-button:hover {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(247, 147, 30, 0.3);
+        }
+
+        .resultado {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .resultado h4 {
+            color: #4ade80;
+            margin-bottom: 12px;
+        }
+
+        .quiz-button {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+            margin: 32px auto;
+            display: block;
+            font-family: inherit;
+        }
+
+        .quiz-button:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .footer-container {
+            background: rgba(24, 24, 27, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .footer-container h3 {
+            font-size: 1.5rem;
+            color: #f7931e;
+            margin-bottom: 20px;
+        }
+
+        .footer-container ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px 0;
+        }
+
+        .footer-container li {
+            margin: 12px 0;
+            font-size: 1rem;
+            color: #d4d4d8;
+        }
+
+        .footer-container .highlight {
+            background: rgba(247, 147, 30, 0.1);
+            border: 1px solid rgba(247, 147, 30, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px;
+            }
+            
+            header {
+                padding: 24px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            nav {
+                padding: 16px 20px;
+            }
+            
+            nav a {
+                display: inline-block;
+                margin: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .section-nav {
+                padding: 20px 24px;
+            }
+
+            .section-nav button {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+
+            .section-content {
+                padding: 24px;
+                max-height: 60vh;
+            }
+
+            .seccion h2 {
+                font-size: 1.5rem;
+            }
+
+            .ejercicio-container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 16px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.75rem;
+            }
+            
+            nav {
+                padding: 12px 16px;
+            }
+            
+            nav a {
+                margin: 6px 8px;
+                font-size: 0.85rem;
+            }
+
+            .section-nav {
+                padding: 16px 20px;
+                gap: 8px;
+            }
+
+            .section-nav button {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .section-content {
+                padding: 20px;
+            }
+
+            .seccion h2 {
+                font-size: 1.25rem;
+            }
+
+            .seccion h3 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header>
+            <h1>SmartSave: Aprende a Ahorrar</h1>
+            <p>Tu guía completa para dominar el arte del ahorro personal</p>
+        </header>
+
+         <nav>
+     <a href="dashboard.html">Dashboard</a> 
+    <a href="budgets.html">Presupuestos</a>  
+    <a href="goals.html">Metas</a> 
+     <a href="entries.html">Gastos</a>
+     <a href="chatbot.html">Chatbot</a>
+     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="Aprender.html">Aprendizaje</a> 
+    </nav>
+
+        <div class="content-container">
+            <div class="section-nav">
+                <button onclick="mostrarSeccion('que-es-ahorro')" class="active">¿Qué es Ahorrar?</button>
+                <button onclick="mostrarSeccion('principios')">Principios Básicos</button>
+                <button onclick="mostrarSeccion('regla50-30-20')">Regla 50-30-20</button>
+                <button onclick="mostrarSeccion('tipos-ahorro')">Tipos de Ahorro</button>
+                <button onclick="mostrarSeccion('estrategias')">Estrategias Prácticas</button>
+                <button onclick="mostrarSeccion('errores')">Errores a Evitar</button>
+            </div>
+
+            <div class="section-content">
+                <!-- Sección: ¿Qué es Ahorrar? -->
+                <section id="que-es-ahorro" class="seccion">
+                    <h2> ¿Qué es Ahorrar?</h2>
+                    
+                    <p><strong>Ahorrar</strong> es la parte de tus ingresos que no destinas al consumo inmediato. Es el dinero que apartamos para utilizarlo en el futuro, ya sea para objetivos específicos, emergencias o inversiones.</p>
+                    
+                    <h3>¿Por qué es Fundamental Ahorrar?</h3>
+                    <ul>
+                        <li><strong>Seguridad financiera:</strong> Te protege ante imprevistos</li>
+                        <li><strong>Libertad de decisión:</strong> Te da opciones cuando las necesitas</li>
+                        <li><strong>Cumplimiento de metas:</strong> Hace posibles tus sueños y proyectos</li>
+                        <li><strong>Independencia:</strong> Reduces la dependencia de créditos costosos</li>
+                        <li><strong>Tranquilidad mental:</strong> Elimina el estrés financiero</li>
+                    </ul>
+
+                    <div class="ejercicio-container">
+                        <h3> Ejercicio de Demostración: El Poder del Ahorro Constante</h3>
+                        <p><strong>Situación:</strong> María recibe $1,500 mensuales como freelancer</p>
+                        
+                        <div class="scenario-box error">
+                            <h4>Escenario A: Sin Ahorro</h4>
+                            <ul>
+                                <li>Gasta los $1,500 completos cada mes</li>
+                                <li>Al año: $0 ahorrados</li>
+                                <li>Ante una emergencia de $300: Debe pedir prestado</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-box success">
+                            <h4>Escenario B: Ahorro del 10%</h4>
+                            <ul>
+                                <li>Ahorra $150 mensuales</li>
+                                <li>Gasta $1,350 (ajusta sus gastos)</li>
+                                <li>Al año: $1,800 ahorrados</li>
+                                <li>Ante emergencias: Tiene respaldo propio</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="reveal-button" onclick="mostrarResultado('resultado-ejercicio1')">Ver Análisis Completo</button>
+                        
+                        <div id="resultado-ejercicio1" class="resultado" style="display: none;">
+                            <h4> Conclusión del Ejercicio:</h4>
+                            <p><strong>Con solo $150 menos al mes ($5 diarios), María:</strong></p>
+                            <ul>
+                                <li> Tiene un fondo de emergencia sólido</li>
+                                <li> Puede planificar vacaciones sin endeudarse</li>
+                                <li> Tiene capital para oportunidades de inversión</li>
+                                <li> Duerme tranquila sabiendo que está preparada</li>
+                            </ul>
+                            <p><em>El ahorro no es privarse, es prepararse para el futuro.</em></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección: Principios Básicos -->
+                <section id="principios" class="seccion" style="display: none;">
+                    <h2> Los 5 Principios Fundamentales del Ahorro</h2>
+                    
+                    <h3>1. Principio del "Págate Primero"</h3>
+                    <p>Cambia la fórmula: En lugar de <strong>Ingresos - Gastos = Ahorro</strong>, usa <strong>Ingresos - Ahorro = Gastos Disponibles</strong></p>
+                    
+                    <h3>2. Principio del Porcentaje Mínimo</h3>
+                    <p>Destina al menos el <strong>10%</strong> de tus ingresos al ahorro. Lo ideal es aspirar al <strong>20%</strong>.</p>
+                    
+                    <h3>3. Principio de la Planificación Temprana</h3>
+                    <p>Comenzar pronto aprovecha el <strong>interés compuesto</strong> y facilita alcanzar objetivos a largo plazo.</p>
+                    
+                    <h3>4. Principio de la Separación</h3>
+                    <p>Mantén <strong>cuentas separadas</strong> para diferentes propósitos: gastos diarios, emergencias y objetivos específicos.</p>
+                    
+                    <h3>5. Principio de la Consistencia</h3>
+                    <p>La <strong>regularidad</strong> es más importante que la cantidad. Es mejor ahorrar $50 cada mes que $600 una sola vez.</p>
+
+                    <div class="ejercicio-container">
+                        <h3> Ejercicio de Demostración: Aplicando los Principios</h3>
+                        <p><strong>Caso:</strong> Carlos, 25 años, gana $2,000 mensuales</p>
+                        
+                        <div class="scenario-box error">
+                            <h4> Método Tradicional (Incorrecto):</h4>
+                            <ul>
+                                <li>Paga todos sus gastos primero</li>
+                                <li>Si sobra algo, lo ahorra</li>
+                                <li>Resultado: Algunos meses ahorra $200, otros $0</li>
+                                <li>Promedio anual: $800 ahorrados</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-box success">
+                            <h4> Aplicando los Principios:</h4>
+                            <ul>
+                                <li><strong>Se paga primero:</strong> Ahorra $300 automáticamente (15%)</li>
+                                <li><strong>Separa por objetivos:</strong> $150 emergencias + $150 metas</li>
+                                <li><strong>Es consistente:</strong> $300 todos los meses sin falta</li>
+                                <li><strong>Resultado:</strong> $3,600 anuales garantizados</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="reveal-button" onclick="mostrarResultado('resultado-ejercicio2')">Ver Impacto a 5 Años</button>
+                        
+                        <div id="resultado-ejercicio2" class="resultado" style="display: none;">
+                            <h4> Proyección a 5 Años:</h4>
+                            <div class="scenario-box error">
+                                <p><strong>Método Tradicional:</strong></p>
+                                <ul>
+                                    <li>5 años × $800 promedio = $4,000</li>
+                                    <li>Sin disciplina, posiblemente menos</li>
+                                </ul>
+                            </div>
+                            <div class="scenario-box success">
+                                <p><strong>Con Principios:</strong></p>
+                                <ul>
+                                    <li>5 años × $3,600 = $18,000 base</li>
+                                    <li>Con interés compuesto al 5%: ~$20,000</li>
+                                    <li>Diferencia: <strong>$16,000 más</strong></li>
+                                </ul>
+                            </div>
+                            <p><em>Los principios correctos multiplican por 5 tu capacidad de ahorro.</em></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección: Regla 50-30-20 -->
+                <section id="regla50-30-20" class="seccion" style="display: none;">
+                    <h2> La Regla 50-30-20: Tu Fórmula de Distribución</h2>
+                    
+                    <p>Esta regla te ayuda a distribuir tus ingresos de manera equilibrada y sostenible:</p>
+                    
+                    <h3> 50% - Necesidades Básicas</h3>
+                    <ul>
+                        <li>Vivienda (alquiler/hipoteca)</li>
+                        <li>Alimentación esencial</li>
+                        <li>Transporte necesario</li>
+                        <li>Servicios básicos (agua, luz, internet)</li>
+                        <li>Seguros obligatorios</li>
+                        <li>Pagos mínimos de deudas</li>
+                    </ul>
+                    
+                    <h3> 30% - Deseos y Gustos Personales</h3>
+                    <ul>
+                        <li>Entretenimiento y salidas</li>
+                        <li>Restaurantes y delivery</li>
+                        <li>Hobbies y aficiones</li>
+                        <li>Ropa y accesorios no esenciales</li>
+                        <li>Tecnología adicional</li>
+                        <li>Vacaciones y viajes</li>
+                    </ul>
+                    
+                    <h3> 20% - Ahorro e Inversión</h3>
+                    <ul>
+                        <li>Fondo de emergencia (prioridad #1)</li>
+                        <li>Ahorro para objetivos específicos</li>
+                        <li>Inversiones a largo plazo</li>
+                        <li>Fondo de jubilación</li>
+                        <li>Pagos extra de deudas</li>
+                    </ul>
+
+                    <div class="ejercicio-container">
+                        <h3> Ejercicio de Demostración: Familia Aplicando 50-30-20</h3>
+                        <p><strong>Familia López:</strong> Ingresos combinados de $4,000 mensuales</p>
+                        
+                        <div class="scenario-box">
+                            <h4>Distribución según 50-30-20:</h4>
+                            <ul>
+                                <li><strong>Necesidades ($2,000):</strong> Renta $1,200 + Comida $400 + Transporte $250 + Servicios $150</li>
+                                <li><strong>Deseos ($1,200):</strong> Entretenimiento $300 + Cenas fuera $200 + Hobbies $200 + Ropa $300 + Imprevistos $200</li>
+                                <li><strong>Ahorro ($800):</strong> Emergencia $400 + Vacaciones $200 + Educación hijos $200</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="reveal-button" onclick="mostrarResultado('resultado-ejercicio3')">Ver Beneficios de esta Distribución</button>
+                        
+                        <div id="resultado-ejercicio3" class="resultado" style="display: none;">
+                            <h4> Beneficios Obtenidos:</h4>
+                            <div class="scenario-box success">
+                                <p><strong>En 6 meses:</strong></p>
+                                <ul>
+                                    <li>Fondo de emergencia: $2,400 (cubre casi 1.5 meses de gastos básicos)</li>
+                                    <li> Vacaciones familiares: $1,200 sin endeudarse</li>
+                                    <li> Educación hijos: $1,200 para cursos o materiales</li>
+                                </ul>
+                            </div>
+                            <div class="scenario-box success">
+                                <p><strong>En 12 meses:</strong></p>
+                                <ul>
+                                    <li> Fondo robusto de $4,800 para emergencias</li>
+                                    <li> Vacaciones anuales garantizadas</li>
+                                    <li> Capital inicial para inversiones</li>
+                                    <li> Tranquilidad financiera familiar</li>
+                                </ul>
+                            </div>
+                            <p><em>La regla 50-30-20 equilibra presente y futuro de manera sostenible.</em></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección: Tipos de Ahorro -->
+                <section id="tipos-ahorro" class="seccion" style="display: none;">
+                    <h2> Tipos de Ahorro Según Tus Objetivos</h2>
+                    
+                    <h3> 1. Ahorro de Emergencia</h3>
+                    <ul>
+                        <li><strong>Propósito:</strong> Gastos inesperados, pérdida de empleo, emergencias médicas</li>
+                        <li><strong>Monto ideal:</strong> 3-6 meses de gastos básicos</li>
+                        <li><strong>Características:</strong> Muy líquido, seguro, accesible inmediatamente</li>
+                        <li><strong>Dónde:</strong> Cuenta de ahorro tradicional</li>
+                    </ul>
+
+                    <h3> 2. Ahorro para Objetivos Específicos</h3>
+                    <ul>
+                        <li><strong>Propósito:</strong> Vacaciones, automóvil, casa, educación, boda</li>
+                        <li><strong>Plazo:</strong> Mediano plazo (1-5 años)</li>
+                        <li><strong>Características:</strong> Puede tener menor liquidez, mayor rendimiento</li>
+                        <li><strong>Dónde:</strong> Cuentas de ahorro, CDTs, fondos conservadores</li>
+                    </ul>
+
+                    <h3> 3. Ahorro para la Jubilación</h3>
+                    <ul>
+                        <li><strong>Propósito:</strong> Mantener nivel de vida después del retiro</li>
+                        <li><strong>Plazo:</strong> Largo plazo (10+ años)</li>
+                        <li><strong>Características:</strong> Mayor riesgo aceptable, enfoque en crecimiento</li>
+                        <li><strong>Dónde:</strong> Fondos de pensión, inversiones, portafolios diversificados</li>
+                    </ul>
+
+                    <div class="ejercicio-container">
+                        <h3> Ejercicio de Demostración: Estrategia Multi-Objetivo</h3>
+                        <p><strong>Caso:</strong> Ana, 28 años, ingresos $3,000, quiere ahorrar $600 mensuales (20%)</p>
+                        
+                        <div class="scenario-box error">
+                            <h4> Enfoque Único (Error Común):</h4>
+                            <ul>
+                                <li>Pone todo en una sola cuenta de ahorro</li>
+                                <li>No tiene prioridades claras</li>
+                                <li>Se desanima al no ver progreso específico</li>
+                                <li>Tiende a "romper" el ahorro para gastos varios</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-box success">
+                            <h4> Estrategia Multi-Objetivo:</h4>
+                            <ul>
+                                <li><strong>Emergencias ($300):</strong> Hasta tener $9,000 (3 meses de gastos)</li>
+                                <li><strong>Viaje Europa ($200):</strong> Meta de $2,400 en 12 meses</li>
+                                <li><strong>Jubilación ($100):</strong> Inversión a largo plazo</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="reveal-button" onclick="mostrarResultado('resultado-ejercicio4')">Ver Progreso en 18 Meses</button>
+                        
+                        <div id="resultado-ejercicio4" class="resultado" style="display: none;">
+                            <h4>📊 Resultados después de 18 meses:</h4>
+                            <div class="scenario-box success">
+                                <p><strong>Fondo de Emergencia:</strong></p>
+                                <ul>
+                                    <li>Meta alcanzada en mes 30: $9,000 </li>
+                                    <li>Desde mes 31: $300 adicionales para otros objetivos</li>
+                                </ul>
+                            </div>
+                            <div class="scenario-box success">
+                                <p><strong>Viaje a Europa:</strong></p>
+                                <ul>
+                                    <li>Meta alcanzada en mes 12: $2,400 </li>
+                                    <li>Viaje realizado sin afectar otros ahorros</li>
+                                </ul>
+                            </div>
+                            <div class="scenario-box success">
+                                <p><strong>Jubilación:</strong></p>
+                                <ul>
+                                    <li>18 meses × $100 = $1,800 base</li>
+                                    <li>Con rendimientos: ~$2,000</li>
+                                </ul>
+                            </div>
+                            <p><em>La diversificación de objetivos mantiene la motivación alta y asegura el éxito.</em></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección: Estrategias Prácticas -->
+                <section id="estrategias" class="seccion" style="display: none;">
+                    <h2> Estrategias Prácticas para Ahorrar Más</h2>
+                    
+                    <h3> 1. Automatización del Ahorro</h3>
+                    <ul>
+                        <li>Transferencias automáticas el día de cobro</li>
+                        <li>Apps que redondean compras y ahorran el cambio</li>
+                        <li>Aumento automático del ahorro con subidas salariales</li>
+                    </ul>
+
+                    <h3> 2. Regla de las 24 Horas</h3>
+                    <ul>
+                        <li>Espera un día antes de compras no esenciales mayores a $100</li>
+                        <li>Para compras mayores a $500, espera una semana</li>
+                        <li>Muchas veces la "necesidad" desaparece</li>
+                    </ul>
+
+                    <h3> 3. Método de Presupuesto por Sobres</h3>
+                    <ul>
+                        <li>Asigna dinero específico para cada categoría</li>
+                        <li>Cuando se acaba el sobre, no hay más gasto en esa categoría</li>
+                        <li>Puede ser físico o digital</li>
+                    </ul>
+
+                    <h3> 4. Técnica del Objetivo Visual</h3>
+                    <ul>
+                        <li>Crea representaciones visuales de tus metas</li>
+                        <li>Gráficos de progreso, fotos de objetivos</li>
+                        <li>Celebra hitos intermedios</li>
+                    </ul>
+
+                    <div class="ejercicio-container">
+                        <h3>🎮 Ejercicio de Demostración: El Desafío de 52 Semanas</h3>
+                        <p><strong>Concepto:</strong> Incrementar el ahorro progresivamente durante un año</p>
+                        
+                        <div class="scenario-box">
+                            <h4> Cómo Funciona:</h4>
+                            <ul>
+                                <li><strong>Semana 1:</strong> Ahorra $1</li>
+                                <li><strong>Semana 2:</strong> Ahorra $2</li>
+                                <li><strong>Semana 3:</strong> Ahorra $3</li>
+                                <li><strong>...</strong></li>
+                                <li><strong>Semana 52:</strong> Ahorra $52</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-box success">
+                            <h4> Variante Inteligente (Para Jóvenes):</h4>
+                            <ul>
+                                <li><strong>Enero-Marzo:</strong> Cantidades altas (aprovecha bonos navideños)</li>
+                                <li><strong>Abril-Junio:</strong> Cantidades medias</li>
+                                <li><strong>Julio-Septiembre:</strong> Cantidades bajas (época de gastos)</li>
+                                <li><strong>Octubre-Diciembre:</strong> Cantidades medias-altas</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="reveal-button" onclick="mostrarResultado('resultado-ejercicio5')">Ver Resultado Final</button>
+                        
+                        <div id="resultado-ejercicio5" class="resultado" style="display: none;">
+                            <h4> Resultados del Desafío:</h4>
+                            <div class="scenario-box success">
+                                <p><strong>Total Ahorrado:</strong> $1,378 en un año</p>
+                                <p><strong>Promedio semanal:</strong> ~$26.50</p>
+                                <p><strong>Equivale a:</strong> Ahorrar $110 mensuales</p>
+                            </div>
+                            <div class="scenario-box success">
+                                <p><strong>Beneficios Adicionales:</strong></p>
+                                <ul>
+                                    <li> Crea el hábito del ahorro progresivo</li>
+                                    <li> Se siente como un juego, no una obligación</li>
+                                    <li> Al final tienes un fondo considerable</li>
+                                    <li> Puedes adaptarlo a tu situación económica</li>
+                                </ul>
+                            </div>
+                            <p><em>Los pequeños hábitos consistentes generan grandes resultados.</em></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección: Errores a Evitar -->
+                <section id="errores" class="seccion" style="display: none;">
+                    <h2>⚠️ Los 7 Errores Más Costosos del Ahorro</h2>
+                    
+                    <h3> 1. No Tener Objetivos Claros</h3>
+                    <p><strong>Error:</strong> Ahorrar sin propósito específico</p>
+                    <p><strong>Solución:</strong> Define metas concretas con montos y fechas</p>
+
+                    <h3> 2. Ser Demasiado Restrictivo</h3>
+                    <p><strong>Error:</strong> Presupuestos imposibles de mantener</p>
+                    <p><strong>Solución:</strong> Empieza con metas alcanzables y aumenta gradualmente</p>
+
+                    <h3> 3. No Considerar la Inflación</h3>
+                    <p><strong>Error:</strong> Mantener todo en cuentas que no generan rendimientos</p>
+                    <p><strong>Solución:</strong> Diversifica entre ahorro líquido e inversiones</p>
+
+                    <h3> 4. Mezclar Ahorro con Gastos</h3>
+                    <p><strong>Error:</strong> Tener todo el dinero en una sola cuenta</p>
+                    <p><strong>Solución:</strong> Separa cuentas por propósito específico</p>
+
+                    <h3> 5. No Automatizar</h3>
+                    <p><strong>Error:</strong> Depender de recordar ahorrar manualmente</p>
+                    <p><strong>Solución:</strong> Configura transferencias automáticas</p>
+
+                    <h3> 6. Ahorrar Solo Lo Que Sobra</h3>
+                    <p><strong>Error:</strong> Esperar hasta final de mes para ver si sobra dinero</p>
+                    <p><strong>Solución:</strong> Aplicar el principio "págate primero"</p>
+
+                    <h3> 7. No Revisar el Plan</h3>
+                    <p><strong>Error:</strong> Crear un plan y nunca ajustarlo</p>
+                    <p><strong>Solución:</strong> Revisión mensual y ajustes trimestrales</p>
+
+                    <div class="ejercicio-container">
+                        <h3> Ejercicio Final: Caso de Recuperación</h3>
+                        <p><strong>Historia:</strong> Pedro, 30 años, cometió todos los errores durante 5 años</p>
+                        
+                        <div class="scenario-box error">
+                            <h4> Situación Inicial (Después de 5 años de errores):</h4>
+                            <ul>
+                                <li>Ingresos: $2,500 mensuales</li>
+                                <li>Ahorros totales: $1,200 (menos de 1 mes de gastos)</li>
+                                <li>Deudas de tarjeta: $3,000</li>
+                                <li>Sin objetivos claros</li>
+                                <li>Estrés financiero constante</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="scenario-box success">
+                            <h4> Plan de Recuperación (Aplicando lo aprendido):</h4>
+                            <ul>
+                                <li><strong>Mes 1-3:</strong> Fondo emergencia mínimo ($150/mes)</li>
+                                <li><strong>Mes 1-12:</strong> Pago agresivo deudas ($300/mes)</li>
+                                <li><strong>Mes 4+:</strong> Ahorro formal 20% ($500/mes)</li>
+                                <li><strong>Automatización:</strong> Todo por transferencia automática</li>
+                                <li><strong>Objetivos:</strong> Emergencia, vacaciones, jubilación</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="reveal-button" onclick="mostrarResultado('resultado-ejercicio6')">Ver Transformación en 2 Años</button>
+                        
+                        <div id="resultado-ejercicio6" class="resultado" style="display: none;">
+                            <h4> Situación después de 24 meses:</h4>
+                            <div class="scenario-box success">
+                                <p><strong>Logros Financieros:</strong></p>
+                                <ul>
+                                    <li> Deudas eliminadas completamente</li>
+                                    <li> Fondo emergencia: $7,500 (3 meses)</li>
+                                    <li> Ahorro objetivos: $6,000</li>
+                                    <li> Jubilación: $3,000 invertidos</li>
+                                    <li> Total patrimonio: $16,500</li>
+                                </ul>
+                            </div>
+                            <div class="scenario-box success">
+                                <p><strong>Cambios de Vida:</strong></p>
+                                <ul>
+                                    <li> Paz mental y control financiero</li>
+                                    <li> Confianza en el futuro</li>
+                                    <li> Metas claras y alcanzables</li>
+                                    <li>Hábitos financieros sólidos</li>
+                                </ul>
+                            </div>
+                            <p><em>Nunca es tarde para corregir el rumbo. Los principios correctos transforman cualquier situación.</em></p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <a href="quiz.html"><button class="quiz-button" id="boton-quiz"> ¡Pon a Prueba lo que Aprendiste!</button></a>
+
+    <script>
+        // Función para mostrar secciones
+        function mostrarSeccion(seccion) {
+            // Ocultar todas las secciones
+            const secciones = document.querySelectorAll('.seccion');
+            secciones.forEach(s => s.style.display = 'none');
+            
+            // Remover clase active de todos los botones
+            const botones = document.querySelectorAll('.section-nav button');
+            botones.forEach(b => b.classList.remove('active'));
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(seccion).style.display = 'block';
+            
+            // Agregar clase active al botón correspondiente
+            event.target.classList.add('active');
+            
+            // Scroll al inicio del contenido
+            document.querySelector('.section-content').scrollTop = 0;
+        }
+        
+        // Función para mostrar resultados de ejercicios
+        function mostrarResultado(idResultado) {
+            const resultado = document.getElementById(idResultado);
+            if (resultado.style.display === 'none') {
+                resultado.style.display = 'block';
+            } else {
+                resultado.style.display = 'none';
+            }
+        }
+        
+    
+
+        // Set active nav link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

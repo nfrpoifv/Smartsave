@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: SmartSave - Aprende a Ahorrar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .quiz-container {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            padding: 32px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+
+        .quiz-container > p {
+            font-size: 0.875rem;
+            color: #a1a1aa;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        #question-counter {
+            background: rgba(39, 39, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #a1a1aa;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        #question-container h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        #options-container {
+            margin-bottom: 24px;
+        }
+
+        #options-container > div {
+            background: rgba(39, 39, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #options-container > div:hover {
+            background: rgba(39, 39, 42, 0.8);
+            border-color: rgba(247, 147, 30, 0.3);
+            transform: translateY(-1px);
+        }
+
+        #options-container input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #f7931e;
+            cursor: pointer;
+        }
+
+        #options-container label {
+            color: #ffffff;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+            line-height: 1.4;
+            padding: 4px 0;
+        }
+
+        #next-btn, .quiz-container button {
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+            border: none;
+            border-radius: 8px;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.025em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #next-btn:hover:not(:disabled), .quiz-container button:hover {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(247, 147, 30, 0.3);
+        }
+
+        #next-btn:disabled {
+            background: rgba(113, 113, 122, 0.3);
+            color: #71717a;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #feedback {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: rgba(39, 39, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        #results {
+            text-align: center;
+        }
+
+        #results h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #score h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        #performance {
+            background: rgba(39, 39, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                max-width: 95%;
+                padding: 24px;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            #question-container h3 {
+                font-size: 1.1rem;
+            }
+            
+            #options-container > div {
+                padding: 14px 18px;
+            }
+            
+            #next-btn, .quiz-container button {
+                padding: 14px 20px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+                max-width: 98%;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            #question-container h3 {
+                font-size: 1rem;
+            }
+            
+            #options-container > div {
+                padding: 12px 16px;
+            }
+            
+            #next-btn, .quiz-container button {
+                padding: 12px 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Quiz: SmartSave - Aprende a Ahorrar</h1>
+        <p>Evalúa tu conocimiento sobre los principios fundamentales del ahorro</p>
+        
+        <div id="quiz-container">
+            <div id="question-counter"></div>
+            <div id="question-container"></div>
+            <div id="options-container"></div>
+            <button id="next-btn" onclick="nextQuestion()" disabled>Siguiente</button>
+            <div id="feedback"></div>
+        </div>
+        
+        <div id="results" style="display: none;">
+            <h2>Resultados del Quiz</h2>
+            <div id="score"></div>
+            <div id="performance"></div>
+            <button onclick="goToDashboard()">Ir al Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Cuál es la definición correcta de 'ahorrar' según el contenido?",
+                options: [
+                    "Guardar todo el dinero que me sobra al final del mes",
+                    "La parte de tus ingresos que no destinas al consumo inmediato",
+                    "Invertir en productos financieros de alto riesgo",
+                    "Reducir todos los gastos personales al mínimo"
+                ],
+                correct: 1,
+                explanation: "Ahorrar es la parte de tus ingresos que no destinas al consumo inmediato, apartándolo para utilizarlo en el futuro."
+            },
+            {
+                question: "¿Cuál es la fórmula correcta según el principio 'Págate Primero'?",
+                options: [
+                    "Ingresos - Gastos = Ahorro",
+                    "Ingresos - Ahorro = Gastos Disponibles",
+                    "Gastos + Ahorro = Ingresos",
+                    "Ahorro × 2 = Gastos Permitidos"
+                ],
+                correct: 1,
+                explanation: "La fórmula correcta es: Ingresos - Ahorro = Gastos Disponibles. Esto significa que primero apartas el ahorro y luego planificas los gastos."
+            },
+            {
+                question: "Según la regla 50-30-20, ¿cómo se distribuyen los ingresos?",
+                options: [
+                    "50% ahorro, 30% necesidades, 20% deseos",
+                    "50% necesidades, 30% deseos, 20% ahorro",
+                    "50% deseos, 30% ahorro, 20% necesidades",
+                    "50% gastos varios, 30% ahorro, 20% emergencias"
+                ],
+                correct: 1,
+                explanation: "La regla 50-30-20 establece: 50% para necesidades básicas, 30% para deseos personales y 20% para ahorro e inversión."
+            },
+            {
+                question: "¿Cuál es el porcentaje mínimo de ingresos que se debe destinar al ahorro?",
+                options: [
+                    "5%",
+                    "10%",
+                    "15%",
+                    "25%"
+                ],
+                correct: 1,
+                explanation: "Según el principio del porcentaje mínimo, se debe destinar al menos el 10% de los ingresos al ahorro, aspirando idealmente al 20%."
+            },
+            {
+                question: "¿Para cuántos meses de gastos básicos debe ser el fondo de emergencia?",
+                options: [
+                    "1-2 meses",
+                    "3-6 meses",
+                    "6-12 meses",
+                    "12-24 meses"
+                ],
+                correct: 1,
+                explanation: "El fondo de emergencia ideal debe cubrir entre 3-6 meses de gastos básicos para protegerte ante imprevistos."
+            },
+            {
+                question: "¿Cuál es uno de los errores más costosos del ahorro según el contenido?",
+                options: [
+                    "Ahorrar demasiado dinero",
+                    "Tener objetivos muy ambiciosos",
+                    "Ahorrar solo lo que sobra al final del mes",
+                    "Revisar el plan de ahorro mensualmente"
+                ],
+                correct: 2,
+                explanation: "Ahorrar solo lo que sobra es un error porque no garantiza consistencia. Debes aplicar el principio 'págate primero'."
+            },
+            {
+                question: "En el caso de María del ejercicio, ¿cuánto ahorraba mensualmente con el 10%?",
+                options: [
+                    "$100",
+                    "$150",
+                    "$200",
+                    "$300"
+                ],
+                correct: 1,
+                explanation: "María ganaba $1,500 mensuales y ahorraba el 10%, que equivale a $150 mensuales."
+            },
+            {
+                question: "¿Qué estrategia sugiere esperar 24 horas antes de realizar compras?",
+                options: [
+                    "Método de presupuesto por sobres",
+                    "Regla de las 24 horas",
+                    "Técnica del objetivo visual",
+                    "Automatización del ahorro"
+                ],
+                correct: 1,
+                explanation: "La regla de las 24 horas sugiere esperar un día antes de compras no esenciales mayores a $100 para evitar compras impulsivas."
+            },
+            {
+                question: "¿Cuál es el total que se puede ahorrar con el Desafío de 52 Semanas?",
+                options: [
+                    "$1,200",
+                    "$1,378",
+                    "$1,500",
+                    "$1,600"
+                ],
+                correct: 1,
+                explanation: "El Desafío de 52 Semanas, donde ahorras progresivamente de $1 en la semana 1 hasta $52 en la semana 52, resulta en $1,378 ahorrados."
+            },
+            {
+                question: "¿Cuál de estos NO es un principio fundamental del ahorro mencionado?",
+                options: [
+                    "Principio del 'Págate Primero'",
+                    "Principio de la Consistencia",
+                    "Principio de la Separación",
+                    "Principio de la Maximización de Gastos"
+                ],
+                correct: 3,
+                explanation: "Los 5 principios son: Págate Primero, Porcentaje Mínimo, Planificación Temprana, Separación y Consistencia. No existe el principio de maximización de gastos."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let answered = false;
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            
+            document.getElementById('question-counter').innerHTML = 
+                `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            
+            document.getElementById('question-container').innerHTML = 
+                `<h3>${question.question}</h3>`;
+            
+            let optionsHTML = '';
+            question.options.forEach((option, index) => {
+                optionsHTML += `
+                    <div>
+                        <input type="radio" name="answer" id="option${index}" value="${index}" onchange="selectAnswer(${index})">
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('options-container').innerHTML = optionsHTML;
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('next-btn').disabled = true;
+            selectedAnswer = null;
+            answered = false;
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            
+            selectedAnswer = index;
+            document.getElementById('next-btn').disabled = false;
+            
+            // Disable all radio buttons after selection
+            const radios = document.querySelectorAll('input[name="answer"]');
+            radios.forEach(radio => radio.disabled = true);
+            
+            checkAnswer();
+        }
+
+        function checkAnswer() {
+            if (answered) return;
+            
+            const question = questions[currentQuestion];
+            const labels = document.querySelectorAll('label');
+            
+            if (selectedAnswer === question.correct) {
+                score++;
+                labels[selectedAnswer].style.backgroundColor = '#90EE90';
+                labels[selectedAnswer].style.color = '#000000';
+                document.getElementById('feedback').innerHTML = 
+                    `<p><strong>¡Correcto!</strong> ${question.explanation}</p>`;
+            } else {
+                labels[selectedAnswer].style.backgroundColor = '#FFB6C1';
+                labels[selectedAnswer].style.color = '#000000';
+                labels[question.correct].style.backgroundColor = '#90EE90';
+                labels[question.correct].style.color = '#000000';
+                document.getElementById('feedback').innerHTML = 
+                    `<p><strong>Incorrecto.</strong> ${question.explanation}</p>`;
+            }
+            
+            answered = true;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            document.getElementById('score').innerHTML = 
+                `<h3>Tu puntuación: ${score}/${questions.length} (${percentage}%)</h3>`;
+            
+            let performance = '';
+            if (percentage >= 90) {
+                performance = `<p><strong>¡Excelente!</strong> Dominas muy bien los conceptos de ahorro. Estás listo para aplicar estas estrategias en tu vida financiera.</p>`;
+            } else if (percentage >= 70) {
+                performance = `<p><strong>¡Bien hecho!</strong> Tienes una buena comprensión del ahorro. Te recomendamos repasar algunos conceptos para perfeccionar tu conocimiento.</p>`;
+            } else if (percentage >= 50) {
+                performance = `<p><strong>Buen intento.</strong> Tienes conocimientos básicos, pero sería beneficioso repasar el material para fortalecer tu comprensión del ahorro.</p>`;
+            } else {
+                performance = `<p><strong>Necesitas repasar.</strong> Te recomendamos volver a leer el material sobre ahorro y retomar el quiz para mejorar tu comprensión.</p>`;
+            }
+            
+            document.getElementById('performance').innerHTML = performance;
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Initialize quiz
+        displayQuestion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSave - Metas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+            min-height: 100vh;
+            color: #71717a;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Styles */
+        header {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 
+                0 10px 25px -5px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        header div {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        header a {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        header a:hover {
+            color: #f7931e;
+            background: rgba(247, 147, 30, 0.1);
+        }
+
+        header button {
+            padding: 12px 24px;
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            border-radius: 8px;
+            color: #60a5fa;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        header button:hover {
+            background: rgba(74, 144, 226, 0.2);
+            border-color: rgba(74, 144, 226, 0.5);
+            color: #a1a1aa;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        nav a {
+            color: #a1a1aa;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin: 0 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            color: #f7931e;
+            background: rgba(247, 147, 30, 0.1);
+            transform: translateY(-1px);
+        }
+
+        nav a.active {
+            color: #f7931e;
+            background: rgba(247, 147, 30, 0.15);
+        }
+
+        /* Main Content */
+        main {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 
+                0 10px 25px -5px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        main h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #a1a1aa;
+            margin-bottom: 24px;
+            letter-spacing: -0.01em;
+        }
+
+        /* Form Styles */
+        form {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        form p {
+            margin-bottom: 16px;
+        }
+
+        label {
+            color: #a1a1aa;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #e4e4e7;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(247, 147, 30, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(247, 147, 30, 0.1);
+        }
+
+        button[type="submit"] {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(135deg, #ffa726 0%, #ffb74d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(247, 147, 30, 0.3);
+        }
+
+        /* Message */
+        #message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            display: none;
+        }
+
+        #message.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+
+        #message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        /* HR */
+        hr {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 32px 0;
+        }
+
+        /* Goals List */
+        #goals-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .goal-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .goal-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .goal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #a1a1aa;
+            margin-bottom: 4px;
+        }
+
+        .goal-description {
+            color: #71717a;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .goal-progress {
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f7931e, #ffa726);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: #a1a1aa;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goal-actions button {
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #a1a1aa;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .goal-actions button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .edit-btn {
+            color: #60a5fa !important;
+            border-color: rgba(96, 165, 250, 0.3) !important;
+        }
+
+        .edit-btn:hover {
+            background: rgba(96, 165, 250, 0.1) !important;
+        }
+
+        .delete-btn {
+            color: #f87171 !important;
+            border-color: rgba(248, 113, 113, 0.3) !important;
+        }
+
+        .delete-btn:hover {
+            background: rgba(248, 113, 113, 0.1) !important;
+        }
+
+        /* Modal */
+        #edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 
+                0 20px 40px -10px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content h3 {
+            color: #a1a1aa;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-actions button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .modal-actions button[type="submit"] {
+            background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+            color: #ffffff;
+        }
+
+        .modal-actions button[type="button"] {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a1a1aa;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-actions button:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header {
+                padding: 24px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav {
+                padding: 16px 20px;
+            }
+            
+            nav a {
+                display: block;
+                margin: 8px 0;
+                text-align: center;
+            }
+            
+            main {
+                padding: 24px;
+            }
+            
+            .goal-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .modal-content {
+                padding: 24px;
+            }
+        }
+/* Contenedor de la barra de progreso */
+.goal-progress-container {
+    background: rgba(39, 39, 42, 0.8);
+    height: 24px;
+    border-radius: 12px;
+    margin: 16px 0;
+    padding: 2px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.goal-progress-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.03) 50%, transparent 50%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+    background-size: 20px 20px;
+    animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-20px);
+    }
+    100% {
+        transform: translateX(20px);
+    }
+}
+
+/* Barra de progreso */
+.goal-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.goal-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressGlow 2s ease-in-out infinite;
+}
+
+@keyframes progressGlow {
+    0%, 100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(100%);
+        opacity: 1;
+    }
+}
+
+/* Gradientes para diferentes niveles de progreso */
+.progress-red {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+}
+
+.progress-orange {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
+}
+
+.progress-green {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%);
+}/* Contenedor de la barra de progreso */
+.goal-progress-container {
+    background: rgba(39, 39, 42, 0.8);
+    height: 24px;
+    border-radius: 12px;
+    margin: 16px 0;
+    padding: 2px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.goal-progress-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.03) 50%, transparent 50%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+    background-size: 20px 20px;
+    animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-20px);
+    }
+    100% {
+        transform: translateX(20px);
+    }
+}
+
+/* Barra de progreso */
+.goal-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.goal-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressGlow 2s ease-in-out infinite;
+}
+
+@keyframes progressGlow {
+    0%, 100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    50% {
+        transform: translateX(100%);
+        opacity: 1;
+    }
+}
+
+.progress-red {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+}
+
+.progress-orange {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
+}
+
+.progress-green {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%);
+}
+/* Botón editar */
+button[onclick*="openEditModal"] {
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+    color: #ffffff;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin: 5px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+button[onclick*="openEditModal"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+button[onclick*="openEditModal"]:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+button[onclick*="openEditModal"]:hover::before {
+    left: 100%;
+}
+
+button[onclick*="openEditModal"]:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+
+/* Botón editar */
+button[onclick*="openEditModal"] {
+    background: rgba(39, 39, 42, 0.8);
+    backdrop-filter: blur(10px);
+    color: #f7931e;
+    border: 1px solid rgba(247, 147, 30, 0.3);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+button[onclick*="openEditModal"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(247, 147, 30, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+button[onclick*="openEditModal"]:hover {
+    background: linear-gradient(135deg, #f7931e 0%, #ffa726 50%, #ffb74d 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(247, 147, 30, 0.4);
+}
+
+button[onclick*="openEditModal"]:hover::before {
+    left: 100%;
+}
+
+button[onclick*="openEditModal"]:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(247, 147, 30, 0.3);
+}
+
+/* Botón eliminar */
+button[onclick*="deleteGoal"] {
+    background: rgba(39, 39, 42, 0.8);
+    backdrop-filter: blur(10px);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    margin: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+button[onclick*="deleteGoal"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+button[onclick*="deleteGoal"]:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+button[onclick*="deleteGoal"]:hover::before {
+    left: 100%;
+}
+
+button[onclick*="deleteGoal"]:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Metas Financieras</h1>
+        </header>
+  <nav>
+     <a href="dashboard.html">Dashboard</a> 
+    <a href="budgets.html">Presupuestos</a>  
+    <a href="goals.html">Metas</a> 
+     <a href="entries.html">Gastos</a>
+     <a href="chatbot.html">Chatbot</a>
+     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="Aprender.html">Aprendizaje</a> 
+    </nav>
+
+        <main>
+            <h2>Crear Nueva Meta</h2>
+            
+            <form onsubmit="createGoal(event)">
+                <p>
+                    <label>Nombre de la meta:</label>
+                    <input type="text" id="name" required>
+                </p>
+                <p>
+                    <label>Descripción:</label>
+                    <textarea id="description" rows="3"></textarea>
+                </p>
+                <p>
+                    <label>Cantidad objetivo:</label>
+                    <input type="number" id="targetAmount" step="0.01" required>
+                </p>
+                <p>
+                    <label>Cantidad actual:</label>
+                    <input type="number" id="currentAmount" step="0.01" value="0">
+                </p>
+                <p>
+                    <label>Fecha objetivo:</label>
+                    <input type="date" id="targetDate">
+                </p>
+                <p>
+                    <button type="submit">Crear Meta</button>
+                </p>
+            </form>
+
+            <div id="message"></div>
+
+            <hr>
+
+            <h2>Mis Metas</h2>
+            <div id="goals-list">
+                <p>Cargando metas...</p>
+            </div>
+        </main>
+
+        <!-- Modal para editar meta -->
+        <div id="edit-modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Editar Meta</h3>
+                <form onsubmit="updateGoal(event)">
+                    <input type="hidden" id="edit-id">
+                    <p>
+                        <label>Nombre:</label>
+                        <input type="text" id="edit-name" required>
+                    </p>
+                    <p>
+                        <label>Descripción:</label>
+                        <textarea id="edit-description" rows="3"></textarea>
+                    </p>
+                    <p>
+                        <label>Cantidad objetivo:</label>
+                        <input type="number" id="edit-targetAmount" step="0.01" required>
+                    </p>
+                    <p>
+                        <label>Cantidad actual:</label>
+                        <input type="number" id="edit-currentAmount" step="0.01">
+                    </p>
+                    <p>
+                        <label>Fecha objetivo:</label>
+                        <input type="date" id="edit-targetDate">
+                    </p>
+                    <div class="modal-actions">
+                        <button type="submit">Actualizar</button>
+                        <button type="button" onclick="closeEditModal()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+      const API_BASE_URL = 'http://localhost:3000/api';
+
+function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+}
+
+async function createGoal(event) {
+    event.preventDefault();
+    
+    const title = document.getElementById('name').value;
+    const description = document.getElementById('description').value;
+    const targetAmount = parseFloat(document.getElementById('targetAmount').value);
+    const currentAmount = parseFloat(document.getElementById('currentAmount').value) || 0;
+    const targetDate = document.getElementById('targetDate').value;
+    const messageDiv = document.getElementById('message');
+
+    const goalData = {
+        title,
+        target_amount: targetAmount,
+        current_amount: currentAmount,
+        category: 'general',
+        currency: 'USD'
+    };
+
+    if (description) goalData.description = description;
+    if (targetDate) goalData.target_date = targetDate;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/goals`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(goalData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            messageDiv.innerHTML = '<p style="color: green;">Meta creada exitosamente</p>';
+            document.querySelector('form').reset();
+            document.getElementById('currentAmount').value = '0';
+            loadGoals();
+        } else {
+            messageDiv.innerHTML = '<p style="color: red;">' + (data.message || 'Error al crear meta') + '</p>';
+        }
+    } catch (error) {
+        messageDiv.innerHTML = '<p style="color: red;">Error de conexión: ' + error.message + '</p>';
+    }
+}
+
+async function loadGoals() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/goals`, {
+            headers: getAuthHeaders()
+        });
+
+        const goalsDiv = document.getElementById('goals-list');
+
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.length > 0) {
+                goalsDiv.innerHTML = data.map(goal => {
+                    const progress = (goal.current_amount / goal.target_amount) * 100;
+                    const progressColor = progress >= 100 ? 'green' : progress >= 50 ? 'orange' : 'red';
+                    
+                    return `
+                        <div style="border: 1px solid #ccc; padding: 15px; margin: 10px 0;">
+                            <h4>${goal.title}</h4>
+                            ${goal.description ? `<p><strong>Descripción:</strong> ${goal.description}</p>` : ''}
+                            <p><strong>Progreso:</strong> $${goal.current_amount} / $${goal.target_amount}</p>
+                            <div class="goal-progress-container">
+                                <div class="goal-progress-bar progress-${progressColor}" style="width: ${Math.min(progress, 100)}%;"></div>
+                            </div>
+                            <p><strong>Porcentaje:</strong> ${progress.toFixed(1)}%</p>
+                            ${goal.target_date ? `<p><strong>Fecha objetivo:</strong> ${new Date(goal.target_date).toLocaleDateString()}</p>` : ''}
+                            <p><strong>Creado:</strong> ${new Date(goal.created_at).toLocaleDateString()}</p>
+                            <button onclick="openEditModal('${goal.id}')">Editar</button>
+                            <button onclick="deleteGoal('${goal.id}')">Eliminar</button>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                goalsDiv.innerHTML = '<p>No tienes metas registradas</p>';
+            }
+        } else if (response.status === 401) {
+            goalsDiv.innerHTML = '<p style="color: red;">Sesión expirada. <a href="index.html">Inicia sesión</a></p>';
+        } else {
+            goalsDiv.innerHTML = '<p style="color: red;">Error al cargar metas</p>';
+        }
+    } catch (error) {
+        document.getElementById('goals-list').innerHTML = '<p style="color: red;">Error de conexión: ' + error.message + '</p>';
+    }
+}
+
+async function openEditModal(goalId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+            const goal = await response.json();
+
+            document.getElementById('edit-id').value = goalId;
+            document.getElementById('edit-name').value = goal.title;
+            document.getElementById('edit-description').value = goal.description || '';
+            document.getElementById('edit-targetAmount').value = goal.target_amount;
+            document.getElementById('edit-currentAmount').value = goal.current_amount;
+            document.getElementById('edit-targetDate').value = goal.target_date ? 
+                new Date(goal.target_date).toISOString().split('T')[0] : '';
+
+            document.getElementById('edit-modal').style.display = 'block';
+        } else {
+            alert('Error al cargar datos de la meta');
+        }
+    } catch (error) {
+        alert('Error de conexión: ' + error.message);
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+}
+
+async function updateGoal(event) {
+    event.preventDefault();
+
+    const goalId = document.getElementById('edit-id').value;
+    const title = document.getElementById('edit-name').value;
+    const description = document.getElementById('edit-description').value;
+    const targetAmount = parseFloat(document.getElementById('edit-targetAmount').value);
+    const currentAmount = parseFloat(document.getElementById('edit-currentAmount').value);
+    const targetDate = document.getElementById('edit-targetDate').value;
+
+    const goalData = {
+        title,
+        target_amount: targetAmount,
+        current_amount: currentAmount
+    };
+
+    if (description) goalData.description = description;
+    if (targetDate) goalData.target_date = targetDate;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(goalData)
+        });
+
+        if (response.ok) {
+            closeEditModal();
+            loadGoals();
+        } else {
+            const data = await response.json();
+            alert(data.message || 'Error al actualizar meta');
+        }
+    } catch (error) {
+        alert('Error de conexión: ' + error.message);
+    }
+}
+
+async function deleteGoal(goalId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta meta?')) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/goals/${goalId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+            loadGoals();
+        } else {
+            alert('Error al eliminar meta');
+        }
+    } catch (error) {
+        alert('Error de conexión: ' + error.message);
+    }
+}
+
+window.onload = function () {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    loadGoals();
+}
+
+window.onclick = function (event) {
+    const modal = document.getElementById('edit-modal');
+    if (event.target === modal) {
+        closeEditModal();
+    }
+}
+    </script>
+</body>
+</html>

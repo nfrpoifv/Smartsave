@@ -1,0 +1,1133 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySaves - Financial Dashboard</title>
+   <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+    min-height: 100vh;
+    color: #ffffff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+.header {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.logo h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+nav a {
+    color: #a1a1aa;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+nav a:hover {
+    color: #f7931e;
+    background: rgba(247, 147, 30, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Main Stats Section */
+.main-stats {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.total-worth-card {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.total-worth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f7931e, #ffa726, #ffb74d);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.total-worth-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.total-worth-card:hover::before {
+    opacity: 1;
+}
+
+.worth-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.worth-amount {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.worth-change {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.worth-change span {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #10b981;
+}
+
+.chart-container {
+    height: 200px;
+    margin-top: 20px;
+}
+
+#chartCanvas {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 8px;
+}
+
+/* Market Overview */
+.market-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.market-card {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.market-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.market-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #a1a1aa;
+}
+
+.market-header div:last-child {
+    font-size: 1.25rem;
+}
+
+.market-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.market-change {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.positive-change {
+    color: #10b981;
+}
+
+.negative-change {
+    color: #ef4444;
+}
+
+/* Assets Section */
+.assets-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.assets-table {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.assets-table:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.table-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    background: rgba(39, 39, 42, 0.6);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+thead th:first-child {
+    border-radius: 8px 0 0 0;
+}
+
+thead th:last-child {
+    border-radius: 0 8px 0 0;
+}
+
+tbody td {
+    padding: 16px;
+    color: #d4d4d8;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
+    background: rgba(24, 24, 27, 0.3);
+}
+
+tbody tr {
+    background: rgba(24, 24, 27, 0.5);
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+tbody tr:hover td {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-registrado {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-calculado {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-positivo {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+/* Savings Goals */
+.savings-goals {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.savings-goals:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.savings-goals h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+}
+
+.goal-item {
+    background: rgba(39, 39, 42, 0.4);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.goal-item:hover {
+    background: rgba(39, 39, 42, 0.6);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.goal-item h4 {
+    color: #f7931e;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.goal-item p {
+    color: #d4d4d8;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.goal-item strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.goal-progress {
+    background: rgba(255, 255, 255, 0.1);
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.goal-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f7931e, #ffa726);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Animation */
+.container > * {
+    animation: slideInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.header { animation-delay: 0.1s; }
+.main-stats { animation-delay: 0.2s; }
+.assets-section { animation-delay: 0.3s; }
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .assets-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .market-overview {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 16px;
+        padding-bottom: 8px;
+    }
+    
+    .market-card {
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    
+    .header {
+        padding: 24px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .logo h1 {
+        font-size: 1.75rem;
+        margin-bottom: 16px;
+    }
+    
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .worth-amount {
+        font-size: 2.5rem;
+    }
+    
+    .total-worth-card,
+    .assets-table,
+    .savings-goals {
+        padding: 24px;
+    }
+    
+    .market-overview {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 16px;
+    }
+    
+    .header,
+    .total-worth-card,
+    .assets-table,
+    .savings-goals {
+        padding: 20px;
+    }
+    
+    .logo h1 {
+        font-size: 1.5rem;
+    }
+    
+    nav a {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        margin: 4px;
+    }
+    
+    .worth-amount {
+        font-size: 2rem;
+    }
+    
+    table {
+        font-size: 0.8rem;
+    }
+    
+    thead th,
+    tbody td {
+        padding: 12px 8px;
+    }
+}
+    </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <h1>Mercado</h1>
+      </div>
+      <nav>
+     <a href="dashboard.html">Dashboard</a> 
+    <a href="budgets.html">Presupuestos</a>  
+    <a href="goals.html">Metas</a> 
+     <a href="entries.html">Gastos</a>
+     <a href="chatbot.html">Chatbot</a>
+     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="Aprender.html">Aprendizaje</a> 
+    </nav>
+
+    </header>
+    <div class="main-stats">
+      <div class="total-worth-card">
+        <div class="worth-header">
+          <div>
+            <h2>Ahorros disponibles para invertir</h2>
+            <div class="worth-amount" id="totalWorth">$23,806.66</div>
+            <div class="worth-change" id="worthChange">
+              <span>+$2,380.67</span>
+              <span>+100.0%</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="savingsChart">
+          <canvas id="chartCanvas" width="100%" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="market-overview">
+        <div class="market-card">
+          <div class="market-header">
+            <div class="market-title">USD/EUR</div>
+            <div>💱</div>
+          </div>
+          <div class="market-value" id="usdEur">0.8600</div>
+          <div class="market-change positive-change" id="usdEurChange">+0.12%</div>
+        </div>
+
+        <div class="market-card">
+          <div class="market-header">
+            <div class="market-title">Bitcoin</div>
+            <div>₿</div>
+          </div>
+          <div class="market-value" id="btcPrice">$117,320.00</div>
+          <div class="market-change negative-change" id="btcChange">-0.64%</div>
+        </div>
+
+        <div class="market-card">
+          <div class="market-header">
+            <div class="market-title">Ethereum</div>
+            <div>Ξ</div>
+          </div>
+          <div class="market-value" id="ethPrice">$3,756.03</div>
+          <div class="market-change negative-change" id="ethChange">-0.32%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="assets-section">
+      <div class="assets-table">
+        <div class="table-header">
+          <h2 class="table-title">Resumen Financiero</h2>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="savingsTableBody">
+              <tr>
+                <td>Ingresos Totales</td>
+                <td>$23,807.16</td>
+                <td><span class="status-badge status-registrado">Registrado</span></td>
+                <td>21/7/2025</td>
+              </tr>
+              <tr>
+                <td>Gastos Totales</td>
+                <td>$0.50</td>
+                <td><span class="status-badge status-calculado">Calculado</span></td>
+                <td>21/7/2025</td>
+              </tr>
+              <tr>
+                <td>Disponible para Ahorrar</td>
+                <td>$23,806.66</td>
+                <td><span class="status-badge status-positivo">Positivo</span></td>
+                <td>21/7/2025</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="savings-goals">
+        <h3>Metas de Ahorro</h3>
+        <div id="goalsContainer">
+          <div class="goal-item">
+            <h4>PC Gaming</h4>
+            <p><strong>Progreso:</strong> 95.2% completado</p>
+            <p><strong>Completado:</strong> No</p>
+            <p><strong>Fecha objetivo:</strong> 31/12/2024</p>
+            <p><strong>Categoría:</strong> Tecnología</p>
+            <div class="goal-progress">
+              <div class="goal-progress-bar" style="width: 95.2%"></div>
+            </div>
+          </div>
+          
+          <div class="goal-item">
+            <h4>Fondo de Emergencia</h4>
+            <p><strong>Progreso:</strong> 23.8% completado</p>
+            <p><strong>Completado:</strong> No</p>
+            <p><strong>Fecha objetivo:</strong> 30/06/2025</p>
+            <p><strong>Categoría:</strong> Seguridad</p>
+            <div class="goal-progress">
+              <div class="goal-progress-bar" style="width: 23.8%"></div>
+            </div>
+          </div>
+          
+          <div class="goal-item">
+            <h4>Vacaciones Europa</h4>
+            <p><strong>Progreso:</strong> 47.6% completado</p>
+            <p><strong>Completado:</strong> No</p>
+            <p><strong>Fecha objetivo:</strong> 15/08/2025</p>
+            <p><strong>Categoría:</strong> Entretenimiento</p>
+            <div class="goal-progress">
+              <div class="goal-progress-bar" style="width: 47.6%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+ const API_BASE_URL = 'http://localhost:3000/api';
+const API_CONFIG = {
+  exchangeRate: 'https://api.exchangerate-api.com/v4/latest/',
+  coingecko: 'https://api.coingecko.com/api/v3/',
+  fallbackExchange: 'https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/'
+};
+
+// Tipo de cambio CRC a USD (aproximado, se actualizará con API)
+const CRC_TO_USD_RATE = 0.00195; // 1 CRC = 0.00195 USD aproximadamente
+
+let appState = {
+  userCurrency: 'USD',
+  totalIncome: 0,
+  totalExpenses: 0,
+  availableToSave: 0, // En colones
+  availableToSaveUSD: 0, // En dólares para inversiones
+  savingsEntries: [],
+  savingsGoals: [],
+  marketData: {},
+  exchangeRates: {},
+  lastUpdate: null
+};
+
+function getAuthHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  };
+}
+
+function formatCurrency(amount, currency = 'USD') {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency
+  }).format(amount);
+}
+
+function formatPercentage(value) {
+  const sign = value >= 0 ? '+' : '';
+  return `${sign}${value.toFixed(2)}%`;
+}
+
+function convertCRCToUSD(amountInCRC) {
+  const rate = appState.exchangeRates.CRC || CRC_TO_USD_RATE;
+  return amountInCRC * rate;
+}
+
+async function fetchExchangeRates() {
+  try {
+    const response = await fetch(`${API_CONFIG.exchangeRate}USD`);
+    if (!response.ok) throw new Error('Error en API principal');
+    const data = await response.json();
+    
+    // Convertir CRC rate (si viene como USD/CRC, necesitamos invertirlo para CRC/USD)
+    const rates = data.rates;
+    if (rates.CRC) {
+      rates.CRC = 1 / rates.CRC; // Invertir para obtener CRC a USD
+    }
+    
+    return rates;
+  } catch (error) {
+    try {
+      const response = await fetch(`${API_CONFIG.fallbackExchange}usd.json`);
+      const data = await response.json();
+      if (data.usd.crc) {
+        data.usd.CRC = data.usd.crc;
+      }
+      return data.usd;
+    } catch (fallbackError) {
+      console.error('Error en todas las APIs de tipos de cambio:', fallbackError);
+      return { EUR: 0.85, CRC: CRC_TO_USD_RATE }; // Valores por defecto
+    }
+  }
+}
+
+async function fetchCryptoData() {
+  try {
+    const response = await fetch(
+      `${API_CONFIG.coingecko}simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true`
+    );
+    if (!response.ok) throw new Error('Error en CoinGecko API');
+    const data = await response.json();
+    console.log('Crypto data received:', data); // Debug
+    return data;
+  } catch (error) {
+    console.error('Error fetching crypto data:', error);
+    return null;
+  }
+}
+
+async function updateMarketData() {
+  try {
+    // Actualizar tipos de cambio
+    const exchangeRates = await fetchExchangeRates();
+    if (exchangeRates) {
+      appState.exchangeRates = exchangeRates;
+      
+      const eurRate = exchangeRates.EUR || exchangeRates.eur;
+      if (eurRate) {
+        const usdEurElement = document.getElementById('usdEur');
+        const usdEurChangeElement = document.getElementById('usdEurChange');
+        
+        if (usdEurElement) {
+          usdEurElement.textContent = eurRate.toFixed(4);
+        }
+        if (usdEurChangeElement) {
+          usdEurChangeElement.textContent = '+0.12%';
+        }
+      }
+    }
+
+    // Actualizar datos de crypto
+    const cryptoData = await fetchCryptoData();
+    if (cryptoData) {
+      // Bitcoin
+      if (cryptoData.bitcoin) {
+        const btcPrice = cryptoData.bitcoin.usd;
+        const btcChange = cryptoData.bitcoin.usd_24h_change;
+        
+        const btcPriceElement = document.getElementById('btcPrice');
+        const btcChangeElement = document.getElementById('btcChange');
+        
+        if (btcPriceElement) {
+          btcPriceElement.textContent = formatCurrency(btcPrice);
+        }
+        if (btcChangeElement) {
+          btcChangeElement.textContent = formatPercentage(btcChange);
+          btcChangeElement.className = btcChange >= 0 ? 'market-change positive-change' : 'market-change negative-change';
+        }
+      }
+
+      // Ethereum
+      if (cryptoData.ethereum) {
+        const ethPrice = cryptoData.ethereum.usd;
+        const ethChange = cryptoData.ethereum.usd_24h_change;
+        
+        const ethPriceElement = document.getElementById('ethPrice');
+        const ethChangeElement = document.getElementById('ethChange');
+        
+        if (ethPriceElement) {
+          ethPriceElement.textContent = formatCurrency(ethPrice);
+        }
+        if (ethChangeElement) {
+          ethChangeElement.textContent = formatPercentage(ethChange);
+          ethChangeElement.className = ethChange >= 0 ? 'market-change positive-change' : 'market-change negative-change';
+        }
+      }
+    }
+    
+    appState.lastUpdate = new Date();
+    console.log('Market data updated successfully'); // Debug
+  } catch (error) {
+    console.error('Error updating market data:', error);
+  }
+}
+
+async function loadCurrentBudget() {
+  try {
+    // Cargar presupuesto e entradas al mismo tiempo
+    const [budgetResponse, entriesResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/budgets/current`, { headers: getAuthHeaders() }),
+      fetch(`${API_BASE_URL}/entries`, { headers: getAuthHeaders() })
+    ]);
+
+    let totalIncomeCRC = 0;
+    let totalExpensesCRC = 0;
+
+    if (budgetResponse.ok) {
+      const budgetData = await budgetResponse.json();
+      const budget = budgetData.budget;
+      totalIncomeCRC = budget && budget.exists ? Number(budget.total_income || 0) : 0;
+    }
+
+    // Calcular gastos reales desde las entradas
+    if (entriesResponse.ok) {
+      const entriesData = await entriesResponse.json();
+      const entries = entriesData.entries || entriesData || [];
+      
+      // Sumar todas las entradas como gastos
+      totalExpensesCRC = entries.reduce((total, entry) => {
+        return total + Number(entry.amount || 0);
+      }, 0);
+    }
+
+    // Calcular dinero disponible para ahorrar EN COLONES
+    const availableToSaveCRC = totalIncomeCRC - totalExpensesCRC;
+    
+    // Guardar en el estado
+    appState.totalIncome = totalIncomeCRC;
+    appState.totalExpenses = totalExpensesCRC;
+    appState.availableToSave = availableToSaveCRC; // En colones
+    
+    // Convertir a USD para inversiones
+    appState.availableToSaveUSD = convertCRCToUSD(availableToSaveCRC);
+    
+    console.log('Budget loaded:', {
+      incomeCRC: totalIncomeCRC,
+      expensesCRC: totalExpensesCRC,
+      availableToSaveCRC: availableToSaveCRC,
+      availableToSaveUSD: appState.availableToSaveUSD
+    });
+
+  } catch (error) {
+    console.error('Error loading budget:', error);
+    appState.totalIncome = 0;
+    appState.totalExpenses = 0;
+    appState.availableToSave = 0;
+    appState.availableToSaveUSD = 0;
+  }
+}
+
+async function loadExpenses() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/entries`, {
+      headers: getAuthHeaders()
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const entries = data.entries || data || [];
+      appState.savingsEntries = entries;
+    } else {
+      appState.savingsEntries = [];
+    }
+  } catch {
+    appState.savingsEntries = [];
+  }
+}
+
+async function loadSavingsGoals() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/goals`, {
+      headers: getAuthHeaders()
+    });
+
+    if (response.ok) {
+      const goals = await response.json();
+      appState.savingsGoals = goals || [];
+    } else {
+      appState.savingsGoals = [];
+    }
+  } catch {
+    appState.savingsGoals = [];
+  }
+}
+
+function updateFinancialSummary() {
+  const tbody = document.getElementById('savingsTableBody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td>Ingresos Totales</td>
+        <td>${formatCurrency(convertCRCToUSD(appState.totalIncome), 'USD')}</td>
+        <td>✅ Registrado</td>
+        <td>${new Date().toLocaleDateString()}</td>
+      </tr>
+      <tr>
+        <td>Gastos Totales</td>
+        <td>${formatCurrency(convertCRCToUSD(appState.totalExpenses), 'USD')}</td>
+        <td>📊 Calculado</td>
+        <td>${new Date().toLocaleDateString()}</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Disponible para Ahorrar</td>
+        <td>${formatCurrency(appState.availableToSaveUSD, 'USD')}</td>
+        <td>${appState.availableToSave > 0 ? '💰 Positivo' : '⚠️ Negativo'}</td>
+        <td>${new Date().toLocaleDateString()}</td>
+      </tr>
+    `;
+  }
+}
+
+function updateGoalsDisplay() {
+  const container = document.getElementById('goalsContainer');
+  if (!container) return;
+  
+  if (!appState.savingsGoals || appState.savingsGoals.length === 0) {
+    container.innerHTML = `<div>No tienes metas de ahorro registradas</div>`;
+    return;
+  }
+
+  container.innerHTML = appState.savingsGoals.map(goal => {
+    const progress = goal.progress || 0;
+    const current = convertCRCToUSD(Number(goal.current_amount || 0));
+    const target = convertCRCToUSD(Number(goal.target_amount || 0));
+    const targetDate = goal.target_date ? new Date(goal.target_date).toLocaleDateString() : 'Sin fecha límite';
+
+    return `
+      <div class="goal-card">
+        <div class="goal-header">
+          <h4>${goal.title}</h4>
+          <p>${goal.description || 'Sin descripción'}</p>
+        </div>
+        <div class="goal-details">
+          <p><strong>Progreso:</strong> ${formatCurrency(current, 'USD')} / ${formatCurrency(target, 'USD')}</p>
+          <p><strong>Completado:</strong> ${progress}%</p>
+          <p><strong>Fecha objetivo:</strong> ${targetDate}</p>
+          <p><strong>Categoría:</strong> ${goal.category || 'General'}</p>
+        </div>
+        <div class="goal-progress">
+          <div class="goal-progress-bar" style="width: ${Math.min(progress, 100)}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateInvestmentAmount() {
+  // Actualizar el monto disponible para invertir
+  const totalWorthElement = document.getElementById('totalWorth');
+  if (totalWorthElement) {
+    totalWorthElement.textContent = formatCurrency(appState.availableToSaveUSD, 'USD');
+  }
+  
+  // Calcular cambio porcentual basado en si hay dinero disponible para ahorrar
+  const changePercent = appState.availableToSave > 0 ? 
+    ((appState.availableToSave / (appState.totalIncome || 1)) * 100) : 0;
+  const changeSymbol = appState.availableToSave > 0 ? '+' : '';
+  
+  const worthChangeElement = document.getElementById('worthChange');
+  if (worthChangeElement) {
+    const changeAmountUSD = appState.availableToSaveUSD * 0.1; // Simulación de cambio
+    const changeClass = appState.availableToSave > 0 ? 'positive-change' : 'negative-change';
+    worthChangeElement.innerHTML = `
+      <span class="${changeClass}">${changeSymbol}${formatCurrency(Math.abs(changeAmountUSD), 'USD')}</span>
+      <span class="${changeClass}">${changeSymbol}${Math.abs(changePercent).toFixed(1)}%</span>
+    `;
+  }
+  
+  console.log('Investment amount updated:', {
+    availableToSaveCRC: appState.availableToSave,
+    availableToSaveUSD: appState.availableToSaveUSD,
+    changePercent: changePercent
+  });
+}
+
+function drawSavingsChart() {
+  const canvas = document.getElementById('chartCanvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  canvas.width = 600;
+  canvas.height = 200;
+  
+  const days = 30;
+  const data = [];
+  const maxValue = Math.max(appState.availableToSaveUSD, 100);
+  
+  for (let i = 0; i < days; i++) {
+    const progress = (i / days) * 0.8 + 0.2;
+    const randomFactor = 0.9 + Math.random() * 0.2;
+    data.push(maxValue * progress * randomFactor);
+  }
+  
+  const color = appState.availableToSave > 0 ? '#27ae60' : '#e74c3c';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  const width = canvas.width - 40;
+  const height = canvas.height - 40;
+  const stepX = width / (days - 1);
+  const minY = Math.min(...data);
+  const maxY = Math.max(...data);
+  const rangeY = maxY - minY || 1;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath();
+  
+  data.forEach((value, index) => {
+    const x = 20 + index * stepX;
+    const y = height - ((value - minY) / rangeY) * (height - 40) + 20;
+    if (index === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  });
+  
+  ctx.stroke();
+}
+
+async function loadAllData() {
+  try {
+    // Primero cargar tipos de cambio
+    await updateMarketData();
+    
+    // Luego cargar datos financieros (esto ahora calcula todo internamente)
+    await loadCurrentBudget();
+    await loadExpenses();
+    await loadSavingsGoals();
+    
+    // Actualizar displays
+    updateInvestmentAmount(); // Nueva función específica para inversiones
+    updateFinancialSummary();
+    updateGoalsDisplay();
+    drawSavingsChart();
+    
+    console.log('All data loaded successfully', {
+      totalIncomeCRC: appState.totalIncome,
+      totalExpensesCRC: appState.totalExpenses,
+      availableToSaveCRC: appState.availableToSave,
+      availableToSaveUSD: appState.availableToSaveUSD
+    });
+  } catch (error) {
+    console.error('Error cargando datos:', error);
+  }
+}
+
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return false;
+  }
+  return true;
+}
+
+async function initializeDashboard() {
+  if (!checkAuth()) return;
+  
+  console.log('Inicializando MySaves Dashboard...');
+  await loadAllData();
+  
+  // Actualizar market data cada 5 minutos
+  setInterval(updateMarketData, 5 * 60 * 1000);
+  
+  // Actualizar datos financieros cada 2 minutos
+  setInterval(loadAllData, 2 * 60 * 1000);
+}
+
+// Función para actualizar manualmente (puedes llamarla desde consola para debug)
+window.updateMarketDataManual = updateMarketData;
+window.loadAllDataManual = loadAllData;
+window.appState = appState; // Para debugging
+
+document.addEventListener('DOMContentLoaded', initializeDashboard);
+  </script>
+</body>
+</html>
