@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRED - Tu Asistente Financiero</title>
+</head>
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f1419 100%);
+    min-height: 100vh;
+    color: #ffffff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 178, 56, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(74, 144, 226, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.chat-container {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 600px;
+    height: 80vh;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+.chat-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.chat-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.chat-header p {
+    font-size: 0.875rem;
+    color: #a1a1aa;
+    font-weight: 500;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(247, 147, 30, 0.3);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(247, 147, 30, 0.5);
+}
+
+.message {
+    padding: 16px 20px;
+    border-radius: 12px;
+    max-width: 80%;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    word-wrap: break-word;
+}
+
+.bot-message {
+    background: rgba(39, 39, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.user-message {
+    background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+    color: #000000;
+    align-self: flex-end;
+    font-weight: 500;
+    border-bottom-right-radius: 4px;
+}
+
+.typing-indicator {
+    padding: 16px 20px;
+    background: rgba(39, 39, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    border-bottom-left-radius: 4px;
+    color: #a1a1aa;
+    font-style: italic;
+    max-width: 80%;
+    align-self: flex-start;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.chat-input {
+    padding: 24px 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.input-field {
+    flex: 1;
+    padding: 16px 20px;
+    font-size: 1rem;
+    background: rgba(39, 39, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    resize: none;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #f7931e;
+    box-shadow: 
+        0 0 0 3px rgba(247, 147, 30, 0.1),
+        0 0 20px rgba(247, 147, 30, 0.15);
+    background: rgba(39, 39, 42, 0.95);
+}
+
+.input-field::placeholder {
+    color: #71717a;
+}
+
+.input-field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.send-button {
+    padding: 16px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f7931e 0%, #ffa726 100%);
+    border: none;
+    border-radius: 8px;
+    color: #000000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.025em;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.send-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(247, 147, 30, 0.3);
+}
+
+.send-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.send-button:disabled {
+    background: rgba(113, 113, 122, 0.3);
+    color: #71717a;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.send-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.send-button:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+@media (max-width: 768px) {
+    .chat-container {
+        height: 95vh;
+        max-width: 95%;
+        border-radius: 12px;
+    }
+    
+    .chat-header {
+        padding: 20px 24px;
+    }
+    
+    .chat-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .chat-messages {
+        padding: 20px 24px;
+    }
+    
+    .message {
+        max-width: 85%;
+        padding: 14px 18px;
+        font-size: 0.9rem;
+    }
+    
+    .chat-input {
+        padding: 20px 24px;
+        gap: 10px;
+    }
+    
+    .input-field,
+    .send-button {
+        padding: 14px 18px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-container {
+        height: 98vh;
+        max-width: 98%;
+        border-radius: 8px;
+    }
+    
+    .chat-header {
+        padding: 16px 20px;
+    }
+    
+    .chat-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+    }
+    
+    .chat-header p {
+        font-size: 0.8rem;
+    }
+    
+    .chat-messages {
+        padding: 16px 20px;
+        gap: 12px;
+    }
+    
+    .message {
+        max-width: 90%;
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .chat-input {
+        padding: 16px 20px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .input-field {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .send-button {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        min-width: 80px;
+    }
+}
+
+header {
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f7931e 0%, #ffd700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+header > div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#user-name {
+    font-weight: 500;
+    color: #e4e4e7;
+    font-size: 1rem;
+}
+
+header button {
+    padding: 12px 24px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #fca5a5;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+header button:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+nav {
+    background: rgba(39, 39, 42, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+nav a {
+    color: #a1a1aa;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin: 0 16px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+nav a:first-child {
+    margin-left: 0;
+}
+
+nav a:hover {
+    color: #f7931e;
+    background: rgba(247, 147, 30, 0.1);
+    transform: translateY(-1px);
+}
+
+body > div {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    body > div {
+        padding: 20px;
+    }
+    
+    header {
+        padding: 24px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    header h1 {
+        font-size: 1.75rem;
+        margin-bottom: 16px;
+    }
+    
+    nav {
+        padding: 16px 20px;
+        text-align: center;
+    }
+    
+    nav a {
+        display: inline-block;
+        margin: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body > div {
+        padding: 16px;
+    }
+    
+    header {
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    nav {
+        padding: 12px 16px;
+    }
+    
+    nav a {
+        margin: 6px 8px;
+        font-size: 0.85rem;
+    }
+}
+</style>
+<body>
+      <div>
+    <header>
+      <h1>ChatBot</h1>
+    </header>
+
+      <nav>
+     <a href="dashboard.html">Dashboard</a> 
+    <a href="budgets.html">Presupuestos</a>  
+    <a href="goals.html">Metas</a> 
+     <a href="entries.html">Gastos</a>
+     <a href="chatbot.html">Chatbot</a>
+     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="Aprender.html">Aprendizaje</a> 
+    </nav>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>FRED</h1>
+            <p>Tu Asistente Financiero Personal</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                ¡Hola! Soy FRED, tu asistente financiero personal. Estoy aquí para ayudarte con consejos sobre presupuestos, ahorro, inversiones y cualquier pregunta financiera que tengas. ¿En qué puedo ayudarte hoy?
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="messageInput" class="input-field" placeholder="Escribe tu mensaje aquí..." maxlength="1000">
+            <button id="sendButton" class="send-button">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+       class FredChatbot {
+    constructor() {
+        // ⚠️ Inserta tu clave de OpenAI desde un archivo de configuración o variable de entorno.
+        // Nunca la pongas directamente en el código subido a GitHub.
+        this.apiKey = 'tu_openai_api_key_aqui';
+        this.apiUrl = 'https://api.openai.com/v1/chat/completions';
+        this.messages = [
+            {
+                role: "system",
+                content: `Eres FRED, un asistente financiero personal experto y amigable. Tu especialidad es ayudar a las personas con:
+                - Presupuestos personales y familiares
+                - Estrategias de ahorro
+                - Consejos de inversión básicos
+                - Planificación financiera
+                - Educación financiera
+                - Análisis de gastos
+                - Metas financieras
+                
+                Siempre responde en español de manera clara, práctica y motivadora. Usa ejemplos concretos cuando sea posible y mantén un tono profesional pero cercano.`
+            }
+        ];
+        
+        this.chatMessages = document.getElementById('chatMessages');
+        this.messageInput = document.getElementById('messageInput');
+        this.sendButton = document.getElementById('sendButton');
+        
+        this.initializeEventListeners();
+    }
+    
+    initializeEventListeners() {
+        this.sendButton.addEventListener('click', () => this.sendMessage());
+        
+        this.messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
+    }
+    
+    async sendMessage() {
+        const message = this.messageInput.value.trim();
+        
+        if (!message) return;
+        
+        // Validar API key
+        if (!this.apiKey || this.apiKey === 'prueba') {
+            this.addMessage('bot', 'Por favor, configura tu API key de OpenAI en el código.');
+            return;
+        }
+        
+        // Deshabilitar entrada mientras se procesa
+        this.setInputState(false);
+        
+        // Agregar mensaje del usuario
+        this.addMessage('user', message);
+        this.messageInput.value = '';
+        
+        // Mostrar indicador de escritura
+        this.showTypingIndicator();
+        
+        try {
+            // Agregar mensaje del usuario al historial
+            this.messages.push({
+                role: "user",
+                content: message
+            });
+            
+            // Llamada a la API de OpenAI
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: this.messages,
+                    max_tokens: 500,
+                    temperature: 0.7,
+                    top_p: 1,
+                    frequency_penalty: 0,
+                    presence_penalty: 0
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Extraer respuesta del asistente
+            const assistantMessage = data.choices[0].message.content;
+            
+            // Agregar respuesta del asistente al historial
+            this.messages.push({
+                role: "assistant",
+                content: assistantMessage
+            });
+            
+            // Ocultar indicador de escritura y mostrar respuesta
+            this.hideTypingIndicator();
+            this.addMessage('bot', assistantMessage);
+            
+        } catch (error) {
+            console.error('Error al comunicarse con OpenAI:', error);
+            this.hideTypingIndicator();
+            this.addMessage('bot', `Lo siento, ocurrió un error: ${error.message}. Por favor, intenta nuevamente.`);
+        } finally {
+            // Rehabilitar entrada
+            this.setInputState(true);
+        }
+    }
+    
+    addMessage(sender, content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.textContent = content;
+        
+        this.chatMessages.appendChild(messageDiv);
+        this.scrollToBottom();
+    }
+    
+    showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.textContent = 'FRED está escribiendo...';
+        
+        this.chatMessages.appendChild(typingDiv);
+        this.scrollToBottom();
+    }
+    
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+    
+    setInputState(enabled) {
+        this.messageInput.disabled = !enabled;
+        this.sendButton.disabled = !enabled;
+        this.sendButton.textContent = enabled ? 'Enviar' : 'Enviando...';
+    }
+    
+    scrollToBottom() {
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+    }
+}
+
+// Inicializar el chatbot cuando se carga la página
+document.addEventListener('DOMContentLoaded', () => {
+    new FredChatbot();
+});
+
+    </script>
+</body>
+</html>
