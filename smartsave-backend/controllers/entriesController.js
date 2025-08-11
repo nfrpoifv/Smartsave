@@ -3,10 +3,10 @@ const db = require('../config/database');
 
 // Crear un nuevo aporte
 const createEntry = async (req, res) => {
-  const { goal_id, amount, notes } = req.body;
+  const { goal_id, amount, notes, entry_date } = req.body; 
   const userId = req.user.userId;
 
-  console.log('Datos recibidos:', { goal_id, amount, notes, userId });
+  console.log('Datos recibidos:', { goal_id, amount, notes, entry_date, userId });
 
   // Validación del monto
   if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
@@ -16,7 +16,7 @@ const createEntry = async (req, res) => {
   }
 
   try {
-    // Limpiar goal_id - convertir string vacío o undefined a null
+  
     let cleanGoalId = null;
     if (goal_id !== null && goal_id !== undefined && goal_id !== '' && goal_id !== 'null') {
       cleanGoalId = parseInt(goal_id);
@@ -27,7 +27,7 @@ const createEntry = async (req, res) => {
 
     console.log('goal_id limpio:', cleanGoalId);
 
-    // Si hay goal_id, verificar que existe y pertenece al usuario
+
     if (cleanGoalId !== null) {
       const [goals] = await db.promise().query(
         'SELECT id, status, title FROM savings_goals WHERE id = ? AND user_id = ?',
@@ -45,10 +45,13 @@ const createEntry = async (req, res) => {
       }
     }
 
-    // Insertar el aporte
+    // Usar la fecha proporcionada o la fecha actual
+    const finalEntryDate = entry_date || new Date().toISOString().split('T')[0];
+
+    // Insertar el aporte - AGREGAMOS entry_date AL QUERY
     const [result] = await db.promise().query(
-      'INSERT INTO savings_entries (goal_id, user_id, amount, notes) VALUES (?, ?, ?, ?)',
-      [cleanGoalId, userId, parseFloat(amount), notes || null]
+      'INSERT INTO savings_entries (goal_id, user_id, amount, entry_date, notes) VALUES (?, ?, ?, ?, ?)',
+      [cleanGoalId, userId, parseFloat(amount), finalEntryDate, notes || null]
     );
 
     console.log('Aporte insertado con ID:', result.insertId);
@@ -60,8 +63,9 @@ const createEntry = async (req, res) => {
         goal_id: cleanGoalId,
         user_id: userId,
         amount: parseFloat(amount),
+        entry_date: finalEntryDate, 
         notes: notes || null,
-        entry_date: new Date().toISOString(),
+        created_at: new Date().toISOString(),
       },
     });
 
@@ -254,7 +258,7 @@ const getEntryById = async (req, res) => {
 // Actualizar una entrada
 const updateEntry = async (req, res) => {
   const { id } = req.params;
-  const { amount, notes, goal_id } = req.body;
+  const { amount, notes, goal_id, entry_date } = req.body; // AGREGAMOS entry_date
   const userId = req.user.userId;
 
   if (!id || isNaN(id)) {
@@ -326,6 +330,12 @@ const updateEntry = async (req, res) => {
       }
       updateFields.push('goal_id = ?');
       updateParams.push(cleanGoalId);
+    }
+
+    // AGREGAMOS MANEJO DE entry_date
+    if (entry_date !== undefined) {
+      updateFields.push('entry_date = ?');
+      updateParams.push(entry_date);
     }
 
     if (updateFields.length === 0) {
@@ -482,4 +492,6 @@ module.exports = {
   getEntries,
   getEntryById,
   updateEntry,
-  deleteEntry }
+  deleteEntry,
+  getEntriesStats
+};

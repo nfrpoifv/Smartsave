@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FRED - Tu Asistente Financiero</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 </head>
 <style>
 
@@ -108,7 +109,7 @@ body::before {
     padding: 16px 20px;
     border-radius: 12px;
     max-width: 80%;
-    line-height: 1.5;
+    line-height: 1.6;
     font-size: 0.95rem;
     word-wrap: break-word;
 }
@@ -119,6 +120,60 @@ body::before {
     color: #ffffff;
     align-self: flex-start;
     border-bottom-left-radius: 4px;
+}
+
+/* Estilos para el contenido markdown en mensajes del bot */
+.bot-message h1, .bot-message h2, .bot-message h3, 
+.bot-message h4, .bot-message h5, .bot-message h6 {
+    color: #f7931e;
+    margin: 16px 0 8px 0;
+    font-weight: 600;
+}
+
+.bot-message h1 { font-size: 1.4rem; }
+.bot-message h2 { font-size: 1.2rem; }
+.bot-message h3 { font-size: 1.1rem; }
+
+.bot-message p {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.bot-message ul, .bot-message ol {
+    margin: 12px 0;
+    padding-left: 20px;
+}
+
+.bot-message li {
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+.bot-message strong {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.bot-message em {
+    color: #a1a1aa;
+    font-style: italic;
+}
+
+.bot-message code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #ffd700;
+}
+
+.bot-message blockquote {
+    border-left: 3px solid #f7931e;
+    padding-left: 16px;
+    margin: 12px 0;
+    font-style: italic;
+    color: #a1a1aa;
 }
 
 .user-message {
@@ -140,11 +195,28 @@ body::before {
     max-width: 80%;
     align-self: flex-start;
     animation: pulse 1.5s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.typing-indicator::after {
+    content: '●●●';
+    animation: typingDots 1.4s ease-in-out infinite;
+    color: #f7931e;
+    font-size: 1.2em;
 }
 
 @keyframes pulse {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
+}
+
+@keyframes typingDots {
+    0%, 20% { opacity: 0.2; }
+    40% { opacity: 1; }
+    60% { opacity: 0.2; }
+    80%, 100% { opacity: 0.2; }
 }
 
 .chat-input {
@@ -481,13 +553,13 @@ body > div {
       <h1>ChatBot</h1>
     </header>
 
-      <nav>
+ <nav>
      <a href="dashboard.html">Dashboard</a> 
-    <a href="budgets.html">Presupuestos</a>  
+    <a href="budgets.html">Presupuesto</a>  
     <a href="goals.html">Metas</a> 
      <a href="entries.html">Gastos</a>
      <a href="chatbot.html">Chatbot</a>
-     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="financial-dashboard.html">Mercado</a>
      <a href="Aprender.html">Aprendizaje</a> 
     </nav>
 
@@ -510,38 +582,44 @@ body > div {
     </div>
 
     <script>
-       class FredChatbot {
-    constructor() {
-        // ⚠️ Inserta tu clave de OpenAI desde un archivo de configuración o variable de entorno.
-        // Nunca la pongas directamente en el código subido a GitHub.
-        this.apiKey = 'tu_openai_api_key_aqui';
+        class FredChatbot {
+    constructor(apiKey) {
+        // La API key se pasa por parámetro o se asigna externamente
+        this.apiKey = apiKey || ''; 
         this.apiUrl = 'https://api.openai.com/v1/chat/completions';
         this.messages = [
             {
                 role: "system",
                 content: `Eres FRED, un asistente financiero personal experto y amigable. Tu especialidad es ayudar a las personas con:
-                - Presupuestos personales y familiares
-                - Estrategias de ahorro
-                - Consejos de inversión básicos
-                - Planificación financiera
-                - Educación financiera
-                - Análisis de gastos
-                - Metas financieras
-                
-                Siempre responde en español de manera clara, práctica y motivadora. Usa ejemplos concretos cuando sea posible y mantén un tono profesional pero cercano.`
+- Presupuestos personales y familiares
+- Estrategias de ahorro
+- Consejos de inversión básicos
+- Planificación financiera
+- Educación financiera
+- Análisis de gastos
+- Metas financieras
+
+IMPORTANTE: Siempre responde usando formato markdown para una mejor presentación:
+- Usa **negritas** para enfatizar puntos importantes
+- Usa ## para títulos y ### para subtítulos
+- Usa listas con - para organizar información
+- Usa > para citas o datos importantes
+- Separa párrafos con líneas en blanco para mejor legibilidad
+
+Siempre responde en español de manera clara, práctica y motivadora. Usa ejemplos concretos cuando sea posible y mantén un tono profesional pero cercano.`
             }
         ];
-        
+
         this.chatMessages = document.getElementById('chatMessages');
         this.messageInput = document.getElementById('messageInput');
         this.sendButton = document.getElementById('sendButton');
-        
+
         this.initializeEventListeners();
     }
-    
+
     initializeEventListeners() {
         this.sendButton.addEventListener('click', () => this.sendMessage());
-        
+
         this.messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -549,35 +627,35 @@ body > div {
             }
         });
     }
-    
+
     async sendMessage() {
         const message = this.messageInput.value.trim();
-        
+
         if (!message) return;
-        
+
         // Validar API key
-        if (!this.apiKey || this.apiKey === 'prueba') {
-            this.addMessage('bot', 'Por favor, configura tu API key de OpenAI en el código.');
+        if (!this.apiKey || this.apiKey === 'prueba' || this.apiKey.trim() === '') {
+            this.addMessage('bot', 'Por favor, configura tu API key de OpenAI para poder usar el chatbot.');
             return;
         }
-        
+
         // Deshabilitar entrada mientras se procesa
         this.setInputState(false);
-        
+
         // Agregar mensaje del usuario
         this.addMessage('user', message);
         this.messageInput.value = '';
-        
+
         // Mostrar indicador de escritura
         this.showTypingIndicator();
-        
+
         try {
             // Agregar mensaje del usuario al historial
             this.messages.push({
                 role: "user",
                 content: message
             });
-            
+
             // Llamada a la API de OpenAI
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
@@ -588,34 +666,34 @@ body > div {
                 body: JSON.stringify({
                     model: "gpt-3.5-turbo",
                     messages: this.messages,
-                    max_tokens: 500,
+                    max_tokens: 800,
                     temperature: 0.7,
                     top_p: 1,
                     frequency_penalty: 0,
                     presence_penalty: 0
                 })
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             // Extraer respuesta del asistente
             const assistantMessage = data.choices[0].message.content;
-            
+
             // Agregar respuesta del asistente al historial
             this.messages.push({
                 role: "assistant",
                 content: assistantMessage
             });
-            
-            // Ocultar indicador de escritura y mostrar respuesta
+
+            // Ocultar indicador de escritura y mostrar respuesta con animación
             this.hideTypingIndicator();
             this.addMessage('bot', assistantMessage);
-            
+
         } catch (error) {
             console.error('Error al comunicarse con OpenAI:', error);
             this.hideTypingIndicator();
@@ -625,39 +703,86 @@ body > div {
             this.setInputState(true);
         }
     }
-    
+
     addMessage(sender, content) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
-        messageDiv.textContent = content;
-        
-        this.chatMessages.appendChild(messageDiv);
+
+        if (sender === 'bot') {
+            this.chatMessages.appendChild(messageDiv);
+            this.scrollToBottom();
+
+            this.typeMessage(messageDiv, content);
+        } else {
+            messageDiv.textContent = content;
+            this.chatMessages.appendChild(messageDiv);
+            this.scrollToBottom();
+        }
+    }
+
+    async typeMessage(messageDiv, content) {
+        const htmlContent = marked.parse(content);
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+
+        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+
+        let currentText = '';
+        const typingSpeed = 15;
+
+        for (let i = 0; i < plainText.length; i++) {
+            currentText += plainText[i];
+
+            const partialContent = this.getPartialMarkdown(content, currentText.length);
+            messageDiv.innerHTML = marked.parse(partialContent);
+
+            this.scrollToBottom();
+
+            await new Promise(resolve => setTimeout(resolve, typingSpeed));
+        }
+
+        messageDiv.innerHTML = htmlContent;
         this.scrollToBottom();
     }
-    
+
+    getPartialMarkdown(fullMarkdown, charCount) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = marked.parse(fullMarkdown);
+        const fullText = tempDiv.textContent || tempDiv.innerText || '';
+
+        if (charCount >= fullText.length) {
+            return fullMarkdown;
+        }
+
+        const ratio = charCount / fullText.length;
+        const cutPoint = Math.floor(fullMarkdown.length * ratio);
+
+        return fullMarkdown.substring(0, cutPoint);
+    }
+
     showTypingIndicator() {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator';
         typingDiv.id = 'typingIndicator';
-        typingDiv.textContent = 'FRED está escribiendo...';
-        
+        typingDiv.textContent = 'FRED está escribiendo';
+
         this.chatMessages.appendChild(typingDiv);
         this.scrollToBottom();
     }
-    
+
     hideTypingIndicator() {
         const typingIndicator = document.getElementById('typingIndicator');
         if (typingIndicator) {
             typingIndicator.remove();
         }
     }
-    
+
     setInputState(enabled) {
         this.messageInput.disabled = !enabled;
         this.sendButton.disabled = !enabled;
         this.sendButton.textContent = enabled ? 'Enviar' : 'Enviando...';
     }
-    
+
     scrollToBottom() {
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
@@ -665,7 +790,8 @@ body > div {
 
 // Inicializar el chatbot cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
-    new FredChatbot();
+    const apiKey = ''; 
+    new FredChatbot(apiKey);
 });
 
     </script>

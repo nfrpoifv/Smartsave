@@ -461,13 +461,13 @@ main > div:nth-child(4) { animation-delay: 0.4s; }
       </div>
     </header>
 
-    <nav>
+   <nav>
      <a href="dashboard.html">Dashboard</a> 
-    <a href="budgets.html">Presupuestos</a>  
+    <a href="budgets.html">Presupuesto</a>  
     <a href="goals.html">Metas</a> 
      <a href="entries.html">Gastos</a>
      <a href="chatbot.html">Chatbot</a>
-     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="financial-dashboard.html">Mercado</a>
      <a href="Aprender.html">Aprendizaje</a> 
     </nav>
 
@@ -658,7 +658,7 @@ main > div:nth-child(4) { animation-delay: 0.4s; }
           if (goals && goals.length > 0) {
             const topGoals = goals.slice(0, 3);
             goalsDiv.innerHTML = topGoals.map(goal => {
-              // CORREGIDO: Usar los valores directos de la meta, no de gastos
+              //Usar los valores directos de la meta, no de gastos
               const currentAmount = Number(goal.current_amount || 0);
               const targetAmount = Number(goal.target_amount || 0);
               

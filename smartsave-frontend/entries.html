@@ -535,16 +535,17 @@
     <header>
       <h1>Gastos Financieros</h1>
     </header>
-
-      <nav>
+ <nav>
      <a href="dashboard.html">Dashboard</a> 
-    <a href="budgets.html">Presupuestos</a>  
+    <a href="budgets.html">Presupuesto</a>  
     <a href="goals.html">Metas</a> 
      <a href="entries.html">Gastos</a>
      <a href="chatbot.html">Chatbot</a>
-     <a href="financial-dashboard.html">Inversiones</a>
+     <a href="financial-dashboard.html">Mercado</a>
      <a href="Aprender.html">Aprendizaje</a> 
     </nav>
+
+    
     <main>
       <div class="form-section">
         <h2>Agregar Nuevo Gasto</h2>
@@ -617,7 +618,7 @@
     function logout() {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      localStorage.removeItem('expenseCategories'); // Limpiar categorías guardadas
+      localStorage.removeItem('expenseCategories');
       window.location.href = 'index.html';
     }
 
@@ -634,6 +635,7 @@
       }
     }
 
+    // FUNCIÓN CORREGIDA - AGREGAMOS entry_date
     async function createEntry(event) {
       event.preventDefault();
 
@@ -651,11 +653,15 @@
         combinedNotes += ` | ${notes}`;
       }
 
+      // AGREGAR entry_date - ESTA ES LA CORRECCIÓN PRINCIPAL
       const entryData = {
         goal_id,
         amount,
-        notes: combinedNotes
+        notes: combinedNotes,
+        entry_date: new Date().toISOString().split('T')[0] // Fecha actual en formato YYYY-MM-DD
       };
+
+      console.log('Enviando datos:', entryData); // Para debugging
 
       try {
         const response = await fetch(`${API_BASE_URL}/entries`, {
@@ -665,6 +671,7 @@
         });
 
         const data = await response.json();
+        console.log('Respuesta del servidor:', data); // Para debugging
 
         if (response.ok) {
           // Guardar la categoría en memoria usando el ID del gasto
@@ -678,6 +685,7 @@
           messageDiv.innerHTML = '<p style="color: red;">' + (data.error || 'Error al agregar gasto') + '</p>';
         }
       } catch (error) {
+        console.error('Error de conexión:', error);
         messageDiv.innerHTML = '<p style="color: red;">Error de conexión: ' + error.message + '</p>';
       }
     }
@@ -692,7 +700,6 @@
         });
 
         if (response.ok) {
-          // Eliminar la categoría de la memoria
           delete expenseCategories[entryId];
           saveCategoriesToStorage();
           loadEntries();
@@ -708,7 +715,6 @@
     function extractCategoryFromNotes(notes) {
       if (!notes) return 'Sin categoría';
       
-      // Buscar el patrón "Categoría: [nombre]"
       const match = notes.match(/Categoría:\s*([^|]+)/);
       if (match) {
         return match[1].trim();
@@ -721,13 +727,11 @@
     function extractDescriptionFromNotes(notes) {
       if (!notes) return '-';
       
-      // Si contiene el separador |, tomar la parte después
       const parts = notes.split('|');
       if (parts.length > 1) {
         return parts[1].trim();
       }
       
-      // Si no hay separador pero comienza con "Categoría:", mostrar solo eso
       if (notes.startsWith('Categoría:')) {
         return '-';
       }
@@ -748,7 +752,6 @@
 
           if (data.entries && data.entries.length > 0) {
             entriesDiv.innerHTML = data.entries.map(entry => {
-              // Obtener categoría: primero de memoria, luego de las notas
               let category = expenseCategories[entry.id] || extractCategoryFromNotes(entry.notes);
               let description = extractDescriptionFromNotes(entry.notes);
               
@@ -807,7 +810,7 @@
         return;
       }
 
-      loadCategoriesFromStorage(); // Cargar categorías guardadas
+      loadCategoriesFromStorage();
       loadGoalsForEntry();
       loadEntries();
     };
