@@ -37,3 +37,40 @@ npm install @sendgrid/mail@7.7.0 axios@1.10.0 bcryptjs@2.4.3 cors@2.8.5 dotenv@1
 4. **Cambiar la Api Key en el JS de chatbot.html**
 
 # Y listo tienes tu proyecto listo
+
+# Comandos utilizados
+
+# Clonar repositorio
+git clone https://github.com/nfrpoifv/Smartsave.git
+
+# Entrar a carpeta backend e instalar dependencias
+cd smartsave-backend
+npm install
+
+# Instalar las dependencias 
+npm install @sendgrid/mail@7.7.0 axios@1.10.0 bcryptjs@2.4.3 cors@2.8.5 dotenv@16.6.1 express@4.21.2 jsonwebtoken@9.0.2 luxon@3.7.1 mysql2@3.14.2 nodemon@3.1.10
+
+# Iniciar el servidor
+node server.js
+
+# diagrama lógico de infraestructura,
+[Usuario] ---> [Navegador Web] ---> [Azure VM con Windows Server 2022 + Node.js/Express]
+                                  ├── Backend (API REST)
+                                  ├── Frontend (HTML, CSS, JS)
+                                  └── Base de Datos
+
+# Despliegue de Aplicación en Azure Virtual Machine (Windows Server 2022)
+
+## Descripción
+Este proyecto está alojado en una máquina virtual de Azure con Windows Server 2022, donde se hospeda un servidor Node.js/Express.
+
+## Características principales
+
+- **Hospedaje del servidor Node.js/Express:** La aplicación corre directamente en la VM, permitiendo control total del entorno.
+- **Control total del entorno y flexibilidad de configuración:** Puedes configurar la máquina y el servidor según tus necesidades específicas.
+- **IP Pública de Azure VM:** La máquina tiene una IP pública asignada para facilitar el acceso externo.
+- **Permitir acceso externo a la aplicación:** Gracias a la IP pública y la configuración adecuada, la aplicación puede ser accedida desde cualquier ubicación.
+- **Acceso desde cualquier ubicación:** Puedes conectarte y usar la aplicación desde cualquier parte del mundo.
+
+
+
